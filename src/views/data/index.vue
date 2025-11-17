@@ -96,7 +96,7 @@ const onCurrentChange = (current: number) => {
         </el-row>
         <!-- <el-button type="primary" @click="getWeatherData">添加环境</el-button>
         <el-button type="primary" @click="getYesterdayData">历史数据</el-button> -->
-        <el-pagination
+        <!-- <el-pagination
           v-model:currentPage="pagination.current"
           class="float-right"
           :page-size="pagination.pageSize"
@@ -106,7 +106,7 @@ const onCurrentChange = (current: number) => {
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="onPageSizeChange"
           @current-change="onCurrentChange"
-        />
+        /> -->
       </template>
     </div>
   </div>

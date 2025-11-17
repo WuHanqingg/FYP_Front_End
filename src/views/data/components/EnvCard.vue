@@ -12,7 +12,7 @@ interface EnvironmentDataType {
   unit: string; // 数据单位，如：μg/m³、°C、%等
   value: number; // 当前数值
   threshold: number; // 阈值
-  status: "normal" | "warning" | "danger"; // 数据状态
+  thresholdType: string; // 阈值类型
   icon: string; // 图标类名
   color: string; // 主题色
 }
@@ -30,13 +30,34 @@ const handleClick = () => {
   emit("click", props.data);
 };
 
+// 阈值类型映射
+const thresholdTypeMap = {
+  'above': '超过阈值警告',
+  'below': '低于阈值警告',
+  'none': '不进行比较'
+};
+
 const computeStatus = () => {
-  if (props.data.value > props.data.threshold) {
-    return "env-card--danger";
-  } else if (props.data.value > props.data.threshold * 0.8) {
-    return "env-card--warning";
-  } else {
+  if(props.data.thresholdType === 'none') {
     return "env-card--normal";
+  }
+  if (props.data.thresholdType === 'above') {
+    if (props.data.value > props.data.threshold) {
+      return "env-card--danger";
+    } else if (props.data.value > props.data.threshold * 0.8) {
+      return "env-card--warning";
+    } else {
+      return "env-card--normal";
+    }
+  }
+  if (props.data.thresholdType === 'below') {
+    if (props.data.value < props.data.threshold) {
+      return "env-card--danger";
+    } else if (props.data.value < props.data.threshold * 0.8) {
+      return "env-card--warning";
+    } else {
+      return "env-card--normal";
+    }
   }
 };
 </script>
@@ -59,6 +80,10 @@ const computeStatus = () => {
       <div class="env-card__value">
         <span class="value-number">{{ data.value }}</span>
         <span class="value-unit">{{ data.unit }}</span>
+      </div>
+      <!-- 添加阈值类型显示 -->
+      <div class="env-card__threshold-type" style="font-size: 14px;">
+        {{ thresholdTypeMap[data.thresholdType as keyof typeof thresholdTypeMap] }}
       </div>
     </div>
   </div>
@@ -186,6 +211,19 @@ const computeStatus = () => {
       font-size: 28px;
       color: rgb(0 0 0 / 65%);
     }
+  }
+
+  // 添加阈值类型样式
+  &__threshold-type {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #909399;
+    text-align: center;
+    padding: 4px 8px;
+    background-color: #f5f7fa;
+    border-radius: 4px;
+    align-self: flex-start;
   }
 }
 </style>
