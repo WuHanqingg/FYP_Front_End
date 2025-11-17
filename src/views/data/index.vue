@@ -3,8 +3,8 @@ import { message } from "@/utils/message";
 import { ElMessageBox } from "element-plus";
 import { ref, onMounted, nextTick } from "vue";
 import CardData from "./cardData";
-import EnvCard from './components/EnvCard.vue';
-import { getWeatherData, getYesterdayData } from "./getCurrentData" 
+import EnvCard from "./components/EnvCard.vue";
+import { getWeatherData, getYesterdayData } from "./getCurrentData";
 
 defineOptions({
   name: "CardList"
@@ -32,19 +32,18 @@ const INITIAL_DATA = {
 const pagination = ref({ current: 1, pageSize: 12, total: 0 });
 
 const dataLoading = ref(false);
-const EnvData = ref([])
-const getCardListData = async () => { 
+const EnvData = ref([]);
+const getCardListData = async () => {
   const data = await getWeatherData();
-  EnvData.value = CardData.environmentData
+  EnvData.value = CardData.environmentData;
   EnvData.value.forEach(item => {
-    item.value = data[item.id][0].value
-  })
+    item.value = data[item.id][0].value;
+  });
   pagination.value = {
     ...pagination.value,
     total: CardData.environmentData.length
   };
 };
-
 
 onMounted(() => {
   getCardListData();
@@ -59,9 +58,6 @@ const onPageSizeChange = (size: number) => {
 const onCurrentChange = (current: number) => {
   pagination.value.current = current;
 };
-
-
-
 </script>
 
 <template>
@@ -73,25 +69,21 @@ const onCurrentChange = (current: number) => {
     >
       <el-empty
         v-show="
-          EnvData
-            .slice(
-              pagination.pageSize * (pagination.current - 1),
-              pagination.pageSize * pagination.current
-            )
-            .filter(v =>
-              v.id.toLowerCase().includes(searchValue.toLowerCase())
-            ).length === 0
+          EnvData.slice(
+            pagination.pageSize * (pagination.current - 1),
+            pagination.pageSize * pagination.current
+          ).filter(v => v.id.toLowerCase().includes(searchValue.toLowerCase()))
+            .length === 0
         "
         :description="`${searchValue} 暂无数据`"
       />
       <template v-if="pagination.total > 0">
         <el-row :gutter="16">
           <el-col
-            v-for="(data, index) in EnvData
-              .slice(
-                pagination.pageSize * (pagination.current - 1),
-                pagination.pageSize * pagination.current
-              )"
+            v-for="(data, index) in EnvData.slice(
+              pagination.pageSize * (pagination.current - 1),
+              pagination.pageSize * pagination.current
+            )"
             :key="index"
             :xs="24"
             :sm="12"
@@ -99,14 +91,11 @@ const onCurrentChange = (current: number) => {
             :lg="6"
             :xl="4"
           >
-            <EnvCard 
-              :key="data.id"
-              :data="data"
-            />
+            <EnvCard :key="data.id" :data="data" />
           </el-col>
         </el-row>
-        <el-button type="primary" @click="getWeatherData">添加环境</el-button>
-        <el-button type="primary" @click="getYesterdayData">历史数据</el-button>
+        <!-- <el-button type="primary" @click="getWeatherData">添加环境</el-button>
+        <el-button type="primary" @click="getYesterdayData">历史数据</el-button> -->
         <el-pagination
           v-model:currentPage="pagination.current"
           class="float-right"

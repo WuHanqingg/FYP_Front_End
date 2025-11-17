@@ -7,121 +7,97 @@ export default {
       type: "CO2",
       unit: "ppm³",
       value: 400,
-      yesterdayValue: 400,
-      status: "normal" as const,
-      icon: "mdi:molecule-co2", // 二氧化碳分子图标
-      color: "#5B8FF9"
+      threshold: 400,
+      icon: "mdi:molecule-co2" // 二氧化碳分子图标
     },
     {
       id: "PM10",
       type: "PM10",
       unit: "μg/m³",
       value: 11,
-      yesterdayValue: 11,
-      status: "warning" as const,
-      icon: "mdi:air-filter", // 空气过滤器图标
-      color: "#FFAB38"
+      threshold: 11,
+      icon: "mdi:air-filter" // 空气过滤器图标
     },
     {
       id: "PM25",
       type: "PM25",
       unit: "μg/m³",
       value: 9,
-      yesterdayValue: 9,
-      status: "warning" as const,
-      icon: "mdi:air-purifier", // 空气净化器图标
-      color: "#FFAB38"
+      threshold: 9,
+      icon: "mdi:air-purifier" // 空气净化器图标
     },
     {
       id: "RSSI",
       type: "RSSI",
       unit: "dBm",
       value: -50,
-      yesterdayValue: -50,
-      status: "warning" as const,
-      icon: "mdi:wifi-strength-2", // WiFi信号强度图标
-      color: "#FFAB38"
+      threshold: -50,
+      icon: "mdi:wifi-strength-2" // WiFi信号强度图标
     },
     {
       id: "ambientTemperature",
       type: "Temperature",
       unit: "°C",
       value: 24.5,
-      yesterdayValue: 22.3,
-      status: "normal" as const,
-      icon: "mdi:thermometer", // 温度计图标
-      color: "#FF7875"
+      threshold: 22.3,
+      icon: "mdi:thermometer" // 温度计图标
     },
     {
       id: "ambientHumidity",
       type: "Humidity",
       unit: "%",
       value: 65,
-      yesterdayValue: 70,
-      status: "normal" as const,
-      icon: "mdi:water-percent", // 水分百分比图标
-      color: "#40A9FF"
+      threshold: 70,
+      icon: "mdi:water-percent" // 水分百分比图标
     },
     {
       id: "lightIntensity",
       type: "Light Intensity",
       unit: "lux",
       value: 500,
-      yesterdayValue: 480,
-      status: "normal" as const,
-      icon: "mdi:brightness-6", // 光照强度图标
-      color: "#FFD632"
+      threshold: 480,
+      icon: "mdi:brightness-6" // 光照强度图标
     },
     {
       id: "pow",
       type: "Power",
       unit: "V",
       value: 75,
-      yesterdayValue: 68,
-      status: "danger" as const,
-      icon: "mdi:lightning-bolt", // 闪电图标
-      color: "#FF4D4F"
+      threshold: 68,
+      icon: "mdi:lightning-bolt" // 闪电图标
     },
     {
       id: "pressure",
       type: "Pressure",
       unit: "KPa",
       value: 50,
-      yesterdayValue: 50,
-      status: "normal" as const,
-      icon: "mdi:gauge", // 压力表图标
-      color: "#73D13D"
+      threshold: 50,
+      icon: "mdi:gauge" // 压力表图标
     },
     {
       id: "rainfall",
       type: "Rainfall",
       unit: "mm",
       value: 0.45,
-      yesterdayValue: 0.42,
-      status: "normal" as const,
-      icon: "mdi:weather-rainy", // 雨天图标
-      color: "#B37FEB"
+      threshold: 0.42,
+      icon: "mdi:weather-rainy" // 雨天图标
     },
     {
       id: "windDirection",
       type: "Wind Direction",
       unit: "°",
       value: 100,
-      yesterdayValue: 100,
-      status: "normal" as const,
-      icon: "mdi:compass-rose", // 罗盘图标
-      color: "#B37FEB"
+      threshold: 100,
+      icon: "mdi:compass-rose" // 罗盘图标
     },
     {
       id: "windSpeed",
       type: "Wind Speed",
       unit: "m/s",
       value: 5,
-      yesterdayValue: 5,
-      status: "normal" as const,
-      icon: "mdi:weather-windy", // 风速图标
-      color: "#B37FEB"
-    },
+      threshold: 5,
+      icon: "mdi:weather-windy" // 风速图标
+    }
   ],
 
   // 原有的数据（如果需要保留）
@@ -141,8 +117,7 @@ export default {
       type: 4,
       banner: "https://tdesign.gtimg.com/tdesign-pro/cloud-server.jpg",
       name: "SSL证书",
-      description:
-        "SSL证书又叫服务器证书，，包括免费、付费证书的申请、管理及部"
-    },
+      description: "SSL证书又叫服务器证书，，包括免费、付费证书的申请、管理及部"
+    }
   ]
 };
