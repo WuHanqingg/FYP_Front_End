@@ -8,7 +8,7 @@ export default {
   meta: {
     icon: "ant-design:cloud-filled",
     title: "实时数据",
-    rank: 20
+    rank: 1
   },
   children: [
     {

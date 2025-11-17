@@ -12,19 +12,19 @@ export default {
   },
   children: [
     {
-      path: "/threshold",
-      name: "Threshold",
+      path: "/thresholdSetting",
+      name: "thresholdSetting",
       component: () => import("@/views/setting/threshold.vue"),
       meta: {
-        title: "阈值",
+        title: "阈值设置",
       }
     },
         {
-      path: "/chart",
-      name: "Chart",
+      path: "/chartSetting",
+      name: "chartSetting",
       component: () => import("@/views/setting/chart.vue"),
       meta: {
-        title: "数据图",
+        title: "数据图设置",
       }
     }
   ]
