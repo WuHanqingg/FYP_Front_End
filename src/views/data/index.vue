@@ -4,7 +4,7 @@ import { ElMessageBox } from "element-plus";
 import { ref, onMounted, nextTick } from "vue";
 import CardData from "./cardData";
 import EnvCard from "./components/EnvCard.vue";
-import { getWeatherData } from "./getCurrentData";
+import { getWeatherData } from "../../api/CloudPlatformApi/getCurrentData";
 
 defineOptions({
   name: "CardList"

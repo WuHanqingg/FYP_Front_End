@@ -22,7 +22,7 @@ export function getCurrentData(token) {
     })
 }
 
-export function getHistoryData(keys = '', startTs = Date.now(), endTs = Date.now(), interval = 0, limit = 1440, agg = 'NONE', token) {
+export function getDataWithTimeStamp(keys = '', startTs = Date.now(), endTs = Date.now(), interval = 0, limit = 1440, agg = 'NONE', token) {
     return request({
         url: `/cloud/api/plugins/telemetry/DEVICE/6c6071d0-ab09-11ef-9997-e74fb9bc8ab0/values/timeseries?keys=${keys}&startTs=${startTs}&endTs=${endTs}&interval=${interval}&limit=${limit}&agg=${agg}`,
         method: 'get',
