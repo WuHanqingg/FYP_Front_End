@@ -2,10 +2,24 @@
 import { ref, reactive, onMounted, nextTick } from "vue";
 import * as echarts from "echarts";
 import { getHistoryData } from "@/api/CloudPlatformApi/getCurrentData";
+import { tr } from "element-plus/es/locale/index.mjs";
 
 // 图表实例
 const chartRef = ref<HTMLDivElement | null>(null);
 let windDirectionChart: echarts.ECharts | null = null;
+
+// 数据间隔选项（毫秒）
+const intervalOptions = [
+  { label: "5分钟", value: 5 * 60 * 1000 },
+  { label: "10分钟", value: 10 * 60 * 1000 },
+  { label: "30分钟", value: 30 * 60 * 1000 },
+  { label: "1小时", value: 60 * 60 * 1000 },
+  { label: "2小时", value: 2 * 60 * 60 * 1000 },
+  { label: "6小时", value: 6 * 60 * 60 * 1000 },
+  { label: "12小时", value: 12 * 60 * 60 * 1000 },
+  { label: "1天", value: 24 * 60 * 60 * 1000 },
+  { label: "自定义", value: -1 } // 自定义选项
+];
 
 // 数据状态
 const state = reactive({
@@ -16,7 +30,15 @@ const state = reactive({
   // 加载状态
   loading: false,
   // 访问令牌
-  token: ""
+  token: "",
+  // 数据间隔
+  interval: 60 * 60 * 1000, // 默认1小时
+  // 自定义间隔值
+  customInterval: 60, // 默认60分钟
+  // 是否显示自定义输入框
+  showCustomInterval: false,
+  // 原始数据备份，用户自定义间隔用
+  originalData: [] as { time: string; windDirection: number }[],
 });
 
 // 初始化图表
@@ -106,14 +128,11 @@ const updateChart = () => {
   windDirectionChart.setOption(option);
 };
 
-
 // 获取风向数据
 const fetchWindDirectionData = async () => {
   state.loading = true;
   
   try {
-
-    
     // 确定时间范围
     let startTs: number;
     let endTs: number;
@@ -127,14 +146,17 @@ const fetchWindDirectionData = async () => {
       startTs = endTs - 24 * 60 * 60 * 1000;
     }
     
+    // 计算limit值，确保获取足够的数据点
+    const timeRange = endTs - startTs;
+    
     // 调用API获取风向历史数据
     const res = await getHistoryData(
       "windDirection", // keys参数，指定获取风向数据
       startTs,    // 开始时间戳
       endTs,      // 结束时间戳
-      1000*60*60,          // interval
-      1440,       // limit
-      "NONE",     // agg
+      0, 
+      1440,      
+      "NONE",     
     );
     
     // 处理API返回的数据
@@ -151,6 +173,8 @@ const fetchWindDirectionData = async () => {
           new Date(a.time).getTime() - new Date(b.time).getTime()
         );
       state.windDirectionData = formattedData;
+      // 备份原始数据
+      state.originalData = formattedData;
     } else {
       state.windDirectionData = [];
     }
@@ -170,6 +194,43 @@ const fetchWindDirectionData = async () => {
 // 处理时间范围变化
 const handleDateChange = () => {
   fetchWindDirectionData();
+};
+
+// 处理数据间隔变化
+const handleIntervalChange = () => {
+  if (state.interval === -1) {
+    state.showCustomInterval = true;
+  } else {
+    state.showCustomInterval = false;
+  }
+  const trueData = ref([])
+  trueData.value[0] = state.originalData[0]
+  for (let i = 1; i < state.originalData.length; i++){
+    let newestTime = new Date(trueData.value[trueData.value.length-1].time).getTime()
+    if(new Date(state.originalData[i].time).getTime()-newestTime>=state.interval){
+      trueData.value.push(state.originalData[i])
+      newestTime = new Date(state.originalData[i].time).getTime()
+    }
+  }
+  // 更新图表数据
+  state.windDirectionData = trueData.value
+  updateChart();
+};
+
+// 处理自定义间隔变化
+const handleCustomIntervalChange = () => {
+  const trueData = ref([])
+  trueData.value[0] = state.originalData[0]
+  for (let i = 1; i < state.originalData.length; i++){
+    let newestTime = new Date(trueData.value[trueData.value.length-1].time).getTime()
+    if(new Date(state.originalData[i].time).getTime()-newestTime>=state.customInterval*60*1000){
+      trueData.value.push(state.originalData[i])
+      newestTime = new Date(state.originalData[i].time).getTime()
+    }
+  } 
+  // 更新图表数据
+  state.windDirectionData = trueData.value
+  updateChart();
 };
 
 // 重置时间范围
@@ -207,6 +268,33 @@ onMounted(() => {
           format="YYYY-MM-DD HH:mm:ss"
           @change="handleDateChange"
         />
+        <el-select 
+          v-model="state.interval" 
+          placeholder="选择数据间隔"
+          @change="handleIntervalChange"
+          style="width: 120px; margin-left: 10px;"
+        >
+          <el-option
+            v-for="item in intervalOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        
+        <!-- 自定义间隔输入框 -->
+        <div v-if="state.showCustomInterval" class="custom-interval-input">
+          <el-input-number
+            v-model="state.customInterval"
+            :min="1"
+            :max="1440"
+            controls-position="right"
+            style="width: 100px; margin-left: 10px;"
+          />
+          <span style="margin-left: 5px;">分钟</span>
+          <el-button @click="handleCustomIntervalChange" style="margin-left: 10px;">确定</el-button>
+        </div>
+        
         <el-button @click="resetDateRange" style="margin-left: 10px;">重置</el-button>
       </div>
     </div>
@@ -233,6 +321,8 @@ onMounted(() => {
       <p>• 纵轴表示风向（单位：度）</p>
       <p>• 使用平滑折线图展示风向随时间的变化趋势</p>
       <p>• 可通过上方时间选择器筛选特定时间段的数据</p>
+      <p>• 可通过数据间隔选择器调整数据点的密度</p>
+      <p>• 选择"自定义"选项可输入任意分钟数作为数据间隔</p>
     </div>
   </div>
 </template>
@@ -259,6 +349,12 @@ onMounted(() => {
     .controls {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
+      
+      .custom-interval-input {
+        display: flex;
+        align-items: center;
+      }
     }
   }
   
