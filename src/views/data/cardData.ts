@@ -8,7 +8,7 @@ export default {
       unit: "ppm³",
       value: 400,
       threshold: 400,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:molecule-co2" // 二氧化碳分子图标
     },
     {
@@ -17,7 +17,7 @@ export default {
       unit: "μg/m³",
       value: 11,
       threshold: 11,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:air-filter" // 空气过滤器图标
     },
     {
@@ -26,7 +26,7 @@ export default {
       unit: "μg/m³",
       value: 9,
       threshold: 9,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:air-purifier" // 空气净化器图标
     },
     {
@@ -35,7 +35,7 @@ export default {
       unit: "dBm",
       value: -50,
       threshold: 30,
-      thresholdType: 'below',
+      thresholdType: "below",
       icon: "mdi:wifi-strength-2" // WiFi信号强度图标
     },
     {
@@ -44,7 +44,7 @@ export default {
       unit: "°C",
       value: 24.5,
       threshold: 22.3,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:thermometer" // 温度计图标
     },
     {
@@ -53,7 +53,7 @@ export default {
       unit: "%",
       value: 65,
       threshold: 70,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:water-percent" // 水分百分比图标
     },
     {
@@ -62,7 +62,7 @@ export default {
       unit: "lux",
       value: 500,
       threshold: 11000,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:brightness-6" // 光照强度图标
     },
     {
@@ -71,7 +71,7 @@ export default {
       unit: "V",
       value: 75,
       threshold: 68,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:lightning-bolt" // 闪电图标
     },
     {
@@ -80,7 +80,7 @@ export default {
       unit: "KPa",
       value: 50,
       threshold: 50,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:gauge" // 压力表图标
     },
     {
@@ -89,7 +89,7 @@ export default {
       unit: "mm",
       value: 0.45,
       threshold: 500,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:weather-rainy" // 雨天图标
     },
     {
@@ -97,8 +97,8 @@ export default {
       type: "Wind Direction",
       unit: "°",
       value: 100,
-      threshold: 'none',
-      thresholdType: 'none',
+      threshold: "none",
+      thresholdType: "none",
       icon: "mdi:compass-rose" // 罗盘图标
     },
     {
@@ -107,29 +107,8 @@ export default {
       unit: "m/s",
       value: 5,
       threshold: 5,
-      thresholdType: 'above',
+      thresholdType: "above",
       icon: "mdi:weather-windy" // 风速图标
-    }
-  ],
-
-  // 原有的数据（如果需要保留）
-  list: [
-    {
-      index: 1,
-      isSetup: true,
-      type: 4,
-      banner: "https://tdesign.gtimg.com/tdesign-pro/cloud-server.jpg",
-      name: "SSL证书",
-      description:
-        "SSL证书又叫服务器证书，腾讯云为您提供证书的一站式服务，包括免费、付费证书的申请、管理及部"
-    },
-    {
-      index: 2,
-      isSetup: true,
-      type: 4,
-      banner: "https://tdesign.gtimg.com/tdesign-pro/cloud-server.jpg",
-      name: "SSL证书",
-      description: "SSL证书又叫服务器证书，，包括免费、付费证书的申请、管理及部"
     }
   ]
 };

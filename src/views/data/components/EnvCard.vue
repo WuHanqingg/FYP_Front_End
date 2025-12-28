@@ -32,16 +32,16 @@ const handleClick = () => {
 
 // 阈值类型映射
 const thresholdTypeMap = {
-  'above': '超过阈值警告',
-  'below': '低于阈值警告',
-  'none': '不进行比较'
+  above: "Beyond threshold warning",
+  below: "Below threshold warning",
+  none: "No comparison"
 };
 
 const computeStatus = () => {
-  if(props.data.thresholdType === 'none') {
+  if (props.data.thresholdType === "none") {
     return "env-card--normal";
   }
-  if (props.data.thresholdType === 'above') {
+  if (props.data.thresholdType === "above") {
     if (props.data.value > props.data.threshold) {
       return "env-card--danger";
     } else if (props.data.value > props.data.threshold * 0.8) {
@@ -50,7 +50,7 @@ const computeStatus = () => {
       return "env-card--normal";
     }
   }
-  if (props.data.thresholdType === 'below') {
+  if (props.data.thresholdType === "below") {
     if (props.data.value < props.data.threshold) {
       return "env-card--danger";
     } else if (props.data.value < props.data.threshold * 0.8) {
@@ -82,8 +82,10 @@ const computeStatus = () => {
         <span class="value-unit">{{ data.unit }}</span>
       </div>
       <!-- 添加阈值类型显示 -->
-      <div class="env-card__threshold-type" style="font-size: 14px;">
-        {{ thresholdTypeMap[data.thresholdType as keyof typeof thresholdTypeMap] }}
+      <div class="env-card__threshold-type" style="font-size: 14px">
+        {{
+          thresholdTypeMap[data.thresholdType as keyof typeof thresholdTypeMap]
+        }}
       </div>
     </div>
   </div>
@@ -215,15 +217,15 @@ const computeStatus = () => {
 
   // 添加阈值类型样式
   &__threshold-type {
+    align-self: flex-start;
+    padding: 4px 8px;
     margin-top: 10px;
     font-size: 12px;
     font-weight: 500;
     color: #909399;
     text-align: center;
-    padding: 4px 8px;
     background-color: #f5f7fa;
     border-radius: 4px;
-    align-self: flex-start;
   }
 }
 </style>

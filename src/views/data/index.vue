@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { message } from "@/utils/message";
-import { ElMessageBox } from "element-plus";
 import { ref, onMounted, nextTick } from "vue";
 import CardData from "./cardData";
 import EnvCard from "./components/EnvCard.vue";

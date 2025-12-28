@@ -64,7 +64,7 @@ const router = useRouter();
             delay: 160
           }
         }"
-        @click="router.push('/')"
+        @click="router.replace('/welcome')"
       >
         返回首页
       </el-button>

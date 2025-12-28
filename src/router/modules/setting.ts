@@ -2,12 +2,12 @@ const Layout = () => import("@/layout/index.vue");
 
 export default {
   path: "/",
-  name: "设置",
+  name: "Setting",
   component: Layout,
   redirect: "/setting",
   meta: {
     icon: "ant-design:setting-filled",
-    title: "设置",
+    title: "Setting",
     rank: 20
   },
   children: [
@@ -16,15 +16,15 @@ export default {
       name: "thresholdSetting",
       component: () => import("@/views/setting/threshold.vue"),
       meta: {
-        title: "阈值设置",
+        title: "ThresholdSetting"
       }
     },
-        {
+    {
       path: "/chartSetting",
       name: "chartSetting",
       component: () => import("@/views/setting/chart.vue"),
       meta: {
-        title: "数据图设置",
+        title: "ChartSetting"
       }
     }
   ]
