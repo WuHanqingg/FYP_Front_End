@@ -4,19 +4,19 @@ export default {
   path: "/",
   name: "Data",
   component: Layout,
-  redirect: "/data",
+  redirect: "/currentData",
   meta: {
     icon: "ant-design:cloud-filled",
-    title: "Current Data",
+    title: "data",
     rank: 1
   },
   children: [
     {
-      path: "/data",
-      name: "Data",
+      path: "/currentData",
+      name: "data",
       component: () => import("@/views/data/index.vue"),
       meta: {
-        title: "Current Data"
+        title: "currentData"
       }
     }
   ]

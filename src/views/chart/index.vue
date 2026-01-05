@@ -2,8 +2,8 @@
 import { ref, reactive, onMounted, nextTick } from "vue";
 import * as echarts from "echarts";
 import { getHistoryData } from "@/api/CloudPlatformApi/getCurrentData";
-import { da, tr } from "element-plus/es/locale/index.mjs";
 import chartData from "@/views/data/chartData";
+import * as xlsx from "xlsx";
 
 // 图表实例
 const chartRef = ref<HTMLDivElement | null>(null);
@@ -36,11 +36,9 @@ const state = reactive({
   originalData: [] as { time: string; windDirection: number }[]
 });
 
+//默认为风向数据
 const currentChartDataDetail = ref(chartData.windDirectionData);
 
-const setCurrentChartDataDetail = () => {
-  currentChartDataDetail.value = chartData[currentChartDataType.value];
-};
 
 // 初始化图表
 const initChart = () => {
@@ -257,6 +255,18 @@ const resetDateRange = () => {
   fetchChartData();
 };
 
+const exportExcel = () => {
+  const fileName = currentChartDataType.value + ".xlsx";
+  const exportData = state.currentData.map((item: { time: string; value: number }) => ({
+    time: item.time,
+    [currentChartDataDetail.value.seriesName]: item.value
+  }));
+  const ws = xlsx.utils.json_to_sheet(exportData);
+  const wb = xlsx.utils.book_new();
+  xlsx.utils.book_append_sheet(wb, ws, fileName);
+  xlsx.writeFile(wb, fileName);
+};
+
 // 组件挂载后初始化
 onMounted(() => {
   initChart();
@@ -331,6 +341,9 @@ onMounted(() => {
 
         <el-button style="margin-left: 10px" @click="resetDateRange"
           >Reset</el-button
+        >
+        <el-button style="margin-left: 10px" @click="exportExcel"
+          >Download</el-button
         >
       </div>
     </div>
