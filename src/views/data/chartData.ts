@@ -32,7 +32,8 @@ export default {
     seriesName: "CO2",
     apiRequestName: "CO2",
     label: "CO2",
-    value: "CO2Data"
+    value: "CO2Data",
+    color: "#52c41a" // 绿色
   },
   // PM10数据
   PM10Data: {
@@ -41,7 +42,8 @@ export default {
     seriesName: "PM10",
     apiRequestName: "PM10",
     label: "PM10",
-    value: "PM10Data"
+    value: "PM10Data",
+    color: "#faad14" // 黄色
   },
   // PM2.5数据
   PM25Data: {
@@ -50,7 +52,8 @@ export default {
     seriesName: "PM2.5",
     apiRequestName: "PM25",
     label: "PM2.5",
-    value: "PM25Data"
+    value: "PM25Data",
+    color: "#f5222d" // 橙色
   },
   // RSSI信号强度
   RSSIData: {
@@ -59,7 +62,8 @@ export default {
     seriesName: "RSSI",
     apiRequestName: "RSSI",
     label: "RSSI",
-    value: "RSSIData"
+    value: "RSSIData",
+    color: "#1890ff" // 蓝色
   },
   // 环境温度
   ambientTemperatureData: {
@@ -68,7 +72,8 @@ export default {
     seriesName: "Temperature",
     apiRequestName: "ambientTemperature",
     label: "Temperature",
-    value: "ambientTemperatureData"
+    value: "ambientTemperatureData",
+    color: "#ff4d4f" // 红色
   },
   // 环境湿度
   ambientHumidityData: {
@@ -77,7 +82,8 @@ export default {
     seriesName: "Humidity",
     apiRequestName: "ambientHumidity",
     label: "Humidity",
-    value: "ambientHumidityData"
+    value: "ambientHumidityData",
+    color: "#13c2c2" // 青色
   },
   // 光照强度
   lightIntensityData: {
@@ -86,7 +92,8 @@ export default {
     seriesName: "Light Intensity",
     apiRequestName: "lightIntensity",
     label: "Light Intensity",
-    value: "lightIntensityData"
+    value: "lightIntensityData",
+    color: "#722ed1" // 紫色
   },
   // 功率
   powData: {
@@ -95,7 +102,8 @@ export default {
     seriesName: "Power",
     apiRequestName: "pow",
     label: "Power",
-    value: "powData"
+    value: "powData",
+    color: "#eb2f96" // 粉色
   },
   // 压力
   pressureData: {
@@ -104,7 +112,8 @@ export default {
     seriesName: "Pressure",
     apiRequestName: "pressure",
     label: "Pressure",
-    value: "pressureData"
+    value: "pressureData",
+    color: "#001529" // 深蓝色
   },
   // 降雨量
   rainfallData: {
@@ -113,7 +122,8 @@ export default {
     seriesName: "Rainfall",
     apiRequestName: "rainfall",
     label: "Rainfall",
-    value: "rainfallData"
+    value: "rainfallData",
+    color: "#69c0ff" // 浅蓝色
   },
   // 风向数据
   windDirectionData: {
@@ -122,7 +132,8 @@ export default {
     seriesName: "Wind Direction",
     apiRequestName: "windDirection",
     label: "Wind Direction",
-    value: "windDirectionData"
+    value: "windDirectionData",
+    color: "#95de64" // 浅绿色
   },
   // 风速数据
   windSpeedData: {
@@ -131,6 +142,7 @@ export default {
     seriesName: "Wind Speed",
     apiRequestName: "windSpeed",
     label: "Wind Speed",
-    value: "windSpeedData"
+    value: "windSpeedData",
+    color: "#73d13d" // 棕色
   }
 };

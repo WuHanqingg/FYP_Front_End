@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from "vue";
+import { ref, reactive, onMounted, onUnmounted, nextTick } from "vue";
 import * as echarts from "echarts";
 import { getHistoryData } from "@/api/CloudPlatformApi/getCurrentData";
 import chartData from "@/views/data/chartData";
@@ -33,11 +33,64 @@ const state = reactive({
   // 是否显示自定义输入框
   showCustomInterval: false,
   // 原始数据备份，用户自定义间隔用
-  originalData: [] as { time: string; windDirection: number }[]
+  originalData: [] as { time: string; value: number }[]
 });
 
-//默认为风向数据
-const currentChartDataDetail = ref(chartData.windDirectionData);
+// 图表类型选项
+const chartTypeOptions = [
+  { label: "Line Chart", value: "line" },
+  { label: "Bar Chart", value: "bar" },
+  { label: "Area Chart", value: "area" } // 使用专门的area类型
+];
+
+// 当前图表类型
+const currentChartType = ref("line");
+
+// 定义图表数据类型配置的接口
+interface ChartDataTypeConfig {
+  title: string;
+  unit: string;
+  seriesName: string;
+  apiRequestName: string;
+  label: string;
+  value: string;
+  color: string;
+}
+
+// 默认为风向数据
+const currentChartDataDetail = ref<ChartDataTypeConfig>(chartData.windDirectionData as ChartDataTypeConfig);
+
+// 统计数据
+const statistics = reactive({
+  max: 0,
+  min: 0,
+  avg: 0,
+  count: 0
+});
+
+// 组件卸载时的清理工作
+onUnmounted(() => {
+  // 清理工作
+});
+
+// 计算统计数据
+const calculateStatistics = () => {
+  if (state.currentData.length === 0) {
+    statistics.max = 0;
+    statistics.min = 0;
+    statistics.avg = 0;
+    statistics.count = 0;
+    return;
+  }
+  
+  const values = state.currentData.map(item => item.value);
+  statistics.max = Math.max(...values);
+  statistics.min = Math.min(...values);
+  statistics.avg = values.reduce((sum, val) => sum + val, 0) / values.length;
+  statistics.count = values.length;
+};
+
+// 将calculateStatistics调用直接添加到updateChart函数内部
 
 
 // 初始化图表
@@ -51,17 +104,45 @@ const initChart = () => {
 // 更新图表
 const updateChart = () => {
   if (!windDirectionChart) return;
+  
+  // 先计算统计数据
+  calculateStatistics();
 
   const option = {
+    backgroundColor: '#fafafa',
     title: {
-      text: currentChartDataDetail.value.title
+      text: currentChartDataDetail.value.title,
+      textStyle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333'
+      },
+      left: 'center',
+      padding: [10, 0, 20, 0]
     },
     tooltip: {
       trigger: "axis",
       formatter: (params: any) => {
-        const data = params[0];
-        return `${data.name}<br/>${currentChartDataDetail.value.seriesName}
-        : ${data.value} ${currentChartDataDetail.value.unit}`;
+        // 极简格式，只显示必要信息
+        const { name, value, marker } = params[0];
+        const { seriesName, unit } = currentChartDataDetail.value;
+        
+        return `${name}<br/>${marker}${seriesName}: ${value} ${unit}`;
+      },
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      borderColor: currentChartDataDetail.value.color,
+      borderWidth: 1,
+      textStyle: {
+        color: '#fff',
+        fontSize: 12
+      },
+      padding: 10,
+      borderRadius: 6,
+      axisPointer: {
+        type: 'cross',
+        crossStyle: {
+          color: '#999'
+        }
       }
     },
     dataZoom: [
@@ -75,43 +156,119 @@ const updateChart = () => {
         start: 0,
         end: 100,
         height: 20,
-        bottom: 10
+        bottom: 10,
+        backgroundColor: '#f5f5f5',
+        borderColor: '#e8e8e8',
+        fillerColor: `rgba(${currentChartDataDetail.value.color.slice(1)}, 0.2)`,
+        handleStyle: {
+          color: currentChartDataDetail.value.color
+        }
       }
     ],
     xAxis: {
       type: "category",
       boundaryGap: false,
-      data: state.currentData.map(item => item.time)
+      data: state.currentData.map(item => item.time),
+      axisLine: {
+        lineStyle: {
+          color: '#ccc'
+        }
+      },
+      axisTick: {
+        show: false
+      },
+      axisLabel: {
+        color: '#666',
+        fontSize: 12,
+        rotate: 45
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: '#f0f0f0',
+          type: 'dashed'
+        }
+      }
     },
     yAxis: {
       type: "value",
-      name: currentChartDataDetail.value.unit
+      name: currentChartDataDetail.value.unit,
+      nameTextStyle: {
+        color: '#666',
+        fontSize: 12
+      },
+      axisLine: {
+        show: true,
+        lineStyle: {
+          color: '#ccc'
+        }
+      },
+      axisTick: {
+        show: false
+      },
+      axisLabel: {
+        color: '#666',
+        fontSize: 12
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: '#f0f0f0',
+          type: 'dashed'
+        }
+      }
+    },
+    legend: {
+      data: [currentChartDataDetail.value.seriesName],
+      top: 30,
+      right: 30,
+      textStyle: {
+        color: '#666',
+        fontSize: 12
+      },
+      itemWidth: 10,
+      itemHeight: 10,
+      itemGap: 15
     },
     series: [
       {
         name: currentChartDataDetail.value.seriesName,
-        type: "line",
+        type: currentChartType.value === "area" ? "line" : currentChartType.value,
         smooth: true,
         symbol: "circle",
         symbolSize: 6,
-        areaStyle: {
+        // 为area chart添加专门的配置
+        areaStyle: currentChartType.value === "area" ? {
+          // 当选择Area Chart时，使用更明显的面积效果
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: "rgba(32, 160, 255, 0.5)"
+              color: currentChartDataDetail.value.color + '80' // 使用主题色，透明度50%
             },
             {
               offset: 1,
-              color: "rgba(32, 160, 255, 0.1)"
+              color: currentChartDataDetail.value.color + '10' // 使用主题色，透明度10%
             }
           ])
-        },
+        } : currentChartType.value === "line" ? {
+          // 普通折线图使用较浅的面积效果
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: currentChartDataDetail.value.color + '20' // 使用主题色，透明度20%
+            },
+            {
+              offset: 1,
+              color: currentChartDataDetail.value.color + '05' // 使用主题色，透明度5%
+            }
+          ])
+        } : undefined,
         lineStyle: {
           width: 2,
-          color: "#20a0ff"
+          color: currentChartDataDetail.value.color
         },
         itemStyle: {
-          color: "#20a0ff",
+          color: currentChartDataDetail.value.color,
           borderWidth: 2
         },
         data: state.currentData.map(item => item.value)
@@ -120,8 +277,13 @@ const updateChart = () => {
     grid: {
       left: "3%",
       right: "4%",
-      bottom: "3%",
-      containLabel: true
+      bottom: "10%",
+      top: "15%",
+      containLabel: true,
+      backgroundColor: '#fff',
+      borderColor: '#e8e8e8',
+      borderWidth: 1,
+      borderRadius: 8
     }
   };
 
@@ -129,7 +291,15 @@ const updateChart = () => {
 };
 
 const updateDataType = () => {
-  currentChartDataDetail.value = chartData[currentChartDataType.value];
+  // 确保获取到正确的配置对象
+  const type = currentChartDataType.value;
+  // 从chartData中获取对应的数据类型配置
+  // 注意：chartData包含chartDataType和intervalOptions数组，所以需要确保只获取数据配置对象
+  const config = chartData[type as keyof typeof chartData];
+  if (config && typeof config === 'object' && 'title' in config && 'unit' in config) {
+    // 确保config是数据配置对象，而不是数组
+    currentChartDataDetail.value = config as ChartDataTypeConfig;
+  }
   updateChart();
   fetchChartData();
 };
@@ -202,51 +372,49 @@ const handleDateChange = () => {
   fetchChartData();
 };
 
+// 通用的数据间隔筛选函数
+const filterDataByInterval = (intervalMs: number) => {
+  if (!state.originalData || state.originalData.length === 0) {
+    state.currentData = [];
+    return;
+  }
+  
+  const filteredData = [state.originalData[0]];
+  let lastTime = new Date(state.originalData[0].time).getTime();
+  
+  for (let i = 1; i < state.originalData.length; i++) {
+    const currentTime = new Date(state.originalData[i].time).getTime();
+    if (currentTime - lastTime >= intervalMs) {
+      filteredData.push(state.originalData[i]);
+      lastTime = currentTime;
+    }
+  }
+  
+  // 如果只有一个数据点，并且原始数据有多个，添加最后一个数据点以保证图表显示
+  if (filteredData.length === 1 && state.originalData.length > 1) {
+    filteredData.push(state.originalData[state.originalData.length - 1]);
+  }
+  
+  state.currentData = filteredData;
+  updateChart();
+};
+
 // 处理数据间隔变化
 const handleIntervalChange = () => {
   if (state.interval === -1) {
     state.showCustomInterval = true;
   } else {
     state.showCustomInterval = false;
-  }
-  const trueData = ref([]);
-  trueData.value[0] = state.originalData[0];
-  for (let i = 1; i < state.originalData.length; i++) {
-    let newestTime = new Date(
-      trueData.value[trueData.value.length - 1].time
-    ).getTime();
-    if (
-      new Date(state.originalData[i].time).getTime() - newestTime >=
-      state.interval
-    ) {
-      trueData.value.push(state.originalData[i]);
-      newestTime = new Date(state.originalData[i].time).getTime();
+    if (state.interval) {
+      filterDataByInterval(state.interval);
     }
   }
-  // 更新图表数据
-  state.currentData = trueData.value;
-  updateChart();
 };
 
 // 处理自定义间隔变化
 const handleCustomIntervalChange = () => {
-  const trueData = ref([]);
-  trueData.value[0] = state.originalData[0];
-  for (let i = 1; i < state.originalData.length; i++) {
-    let newestTime = new Date(
-      trueData.value[trueData.value.length - 1].time
-    ).getTime();
-    if (
-      new Date(state.originalData[i].time).getTime() - newestTime >=
-      state.customInterval * 60 * 1000
-    ) {
-      trueData.value.push(state.originalData[i]);
-      newestTime = new Date(state.originalData[i].time).getTime();
-    }
-  }
-  // 更新图表数据
-  state.currentData = trueData.value;
-  updateChart();
+  const intervalMs = state.customInterval * 60 * 1000;
+  filterDataByInterval(intervalMs);
 };
 
 // 重置时间范围
@@ -267,6 +435,23 @@ const exportExcel = () => {
   xlsx.writeFile(wb, fileName);
 };
 
+// 下载图表为图片
+const downloadChart = (type: 'png' | 'svg') => {
+  if (!windDirectionChart) return;
+  
+  const fileName = `${currentChartDataType.value}_${new Date().getTime()}.${type}`;
+  const dataURL = windDirectionChart.getDataURL({
+    type: type,
+    pixelRatio: 2, // 提高图片质量
+    backgroundColor: '#fafafa'
+  });
+  
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = fileName;
+  link.click();
+};
+
 // 组件挂载后初始化
 onMounted(() => {
   initChart();
@@ -284,19 +469,34 @@ onMounted(() => {
 <template>
   <div class="wind-direction-chart-container">
     <div class="header">
-      <el-select
-        v-model="currentChartDataType"
-        placeholder="Choose Data Type"
-        style="width: 170px; margin-left: 10px"
-        @change="updateDataType()"
-      >
-        <el-option
-          v-for="item in chartDataType"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <el-select
+          v-model="currentChartDataType"
+          placeholder="Choose Data Type"
+          style="width: 170px"
+          @change="updateDataType()"
+        >
+          <el-option
+            v-for="item in chartDataType"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        <el-select
+          v-model="currentChartType"
+          placeholder="Choose Chart Type"
+          style="width: 170px"
+          @change="updateChart"
+        >
+          <el-option
+            v-for="item in chartTypeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </div>
       <div class="controls">
         <el-date-picker
           v-model="state.dateRange"
@@ -343,8 +543,19 @@ onMounted(() => {
           >Reset</el-button
         >
         <el-button style="margin-left: 10px" @click="exportExcel"
-          >Download</el-button
+          >Export Excel</el-button
         >
+        <el-dropdown style="margin-left: 10px">
+          <el-button>
+            Download Chart<i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="downloadChart('png')">PNG Format</el-dropdown-item>
+              <el-dropdown-item @click="downloadChart('svg')">SVG Format</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
 
@@ -352,7 +563,7 @@ onMounted(() => {
       <div
         ref="chartRef"
         class="chart"
-        :style="{ width: '100%', height: 'calc(100vh - 200px)' }"
+        :style="{ width: '100%', height: 'calc(100vh - 280px)' }"
       />
 
       <div v-if="state.loading" class="loading">
@@ -364,6 +575,32 @@ onMounted(() => {
             />
           </template>
         </el-skeleton>
+      </div>
+    </div>
+
+    <!-- 统计信息区域 -->
+    <div class="statistics-panel">
+      <div class="statistic-item">
+        <div class="statistic-label">Total Points</div>
+        <div class="statistic-value">{{ statistics.count }}</div>
+      </div>
+      <div class="statistic-item">
+        <div class="statistic-label">Maximum</div>
+        <div class="statistic-value" :style="{ color: (currentChartDataDetail.value as any).color }">
+          {{ statistics.max.toFixed(2) }} {{ (currentChartDataDetail.value as any).unit }}
+        </div>
+      </div>
+      <div class="statistic-item">
+        <div class="statistic-label">Minimum</div>
+        <div class="statistic-value" :style="{ color: (currentChartDataDetail.value as any).color }">
+          {{ statistics.min.toFixed(2) }} {{ (currentChartDataDetail.value as any).unit }}
+        </div>
+      </div>
+      <div class="statistic-item">
+        <div class="statistic-label">Average</div>
+        <div class="statistic-value" :style="{ color: (currentChartDataDetail.value as any).color }">
+          {{ statistics.avg.toFixed(2) }} {{ (currentChartDataDetail.value as any).unit }}
+        </div>
       </div>
     </div>
 
@@ -434,6 +671,36 @@ onMounted(() => {
       width: 100%;
       height: 100%;
       background-color: rgb(255 255 255 / 80%);
+    }
+  }
+
+  .statistics-panel {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    
+    .statistic-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      
+      .statistic-label {
+        font-size: 12px;
+        color: #909399;
+        margin-bottom: 6px;
+      }
+      
+      .statistic-value {
+        font-size: 20px;
+        font-weight: bold;
+        color: #303133;
+      }
     }
   }
 
