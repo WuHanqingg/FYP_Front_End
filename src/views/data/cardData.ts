@@ -34,7 +34,7 @@ export default {
       type: "RSSI",
       unit: "dBm",
       value: -50,
-      threshold: 30,
+      threshold: 20,
       thresholdType: "below",
       icon: "mdi:wifi-strength-2" // WiFi信号强度图标
     },
