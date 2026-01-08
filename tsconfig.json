@@ -46,7 +46,7 @@
     "src/**/*.vue",
     "types/*.d.ts",
     "vite.config.ts"
-  ],
+, "src/api/BackEnd/request.js", "src/api/BackEnd/getUser.js"  ],
   "exclude": [
     "dist",
     "**/*.js",

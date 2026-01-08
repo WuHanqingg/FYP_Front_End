@@ -12,7 +12,7 @@ import { useLayout } from "@/layout/hooks/useLayout";
 import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
-import { setToken } from "@/utils/auth";
+import { getToken, setToken } from "@/utils/auth";
 import { addPathMatch, getTopMenu } from "@/router/utils";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 
@@ -42,50 +42,22 @@ const ruleForm = reactive({
   username: "admin",
   password: "admin123"
 });
-//   if (!formEl) return;
-//   await formEl.validate(valid => {
-//     if (valid) {
-//       loading.value = true;
-//       useUserStoreHook()
-//         .loginByUsername({
-//           username: ruleForm.username,
-//           password: ruleForm.password
-//         })
-//         .then(res => {
-//           if (res.success) {
-//             // 获取后端路由
-//             return initRouter().then(() => {
-//               disabled.value = true;
-//               router
-//                 .push(getTopMenu(true).path)
-//                 .then(() => {
-//                   message("登录成功", { type: "success" });
-//                 })
-//                 .finally(() => (disabled.value = false));
-//             });
-//           } else {
-//             message("登录失败", { type: "error" });
-//           }
-//         })
-//         .finally(() => (loading.value = false));
-//     }
-//   });
-// };
 
 const onLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate(async valid => {
     if (valid) {
       loading.value = true;
-      setToken({
-        username: "admin",
-        roles: ["admin"],
-        accessToken: "eyJhbGciOiJIUzUxMiJ9.admin"
-      } as any);
       const res = await login({
         username: ruleForm.username,
         passwordHash: ruleForm.password
       });
+      if (res.data.code == 200) {
+        setToken(res.data.data);
+      } else {
+        message("登录失败", { type: "error" });
+      }
+      console.log(getToken().accessToken)
       //全部采取静态路由模式
       usePermissionStoreHook().handleWholeMenus([]);
       addPathMatch();
