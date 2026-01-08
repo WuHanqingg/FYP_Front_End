@@ -4,7 +4,7 @@ export default {
   environmentData: [
     {
       id: "CO2",
-      type: "CO2",
+      name: "CO2",
       unit: "ppm³",
       value: 400,
       threshold: 400,
@@ -13,7 +13,7 @@ export default {
     },
     {
       id: "PM10",
-      type: "PM10",
+      name: "PM10",
       unit: "μg/m³",
       value: 11,
       threshold: 11,
@@ -22,7 +22,7 @@ export default {
     },
     {
       id: "PM25",
-      type: "PM25",
+      name: "PM25",
       unit: "μg/m³",
       value: 9,
       threshold: 9,
@@ -31,7 +31,7 @@ export default {
     },
     {
       id: "RSSI",
-      type: "RSSI",
+      name: "RSSI",
       unit: "dBm",
       value: -50,
       threshold: 20,
@@ -40,7 +40,7 @@ export default {
     },
     {
       id: "ambientTemperature",
-      type: "Temperature",
+      name: "Temperature",
       unit: "°C",
       value: 24.5,
       threshold: 22.3,
@@ -49,7 +49,7 @@ export default {
     },
     {
       id: "ambientHumidity",
-      type: "Humidity",
+      name: "Humidity",
       unit: "%",
       value: 65,
       threshold: 70,
@@ -58,7 +58,7 @@ export default {
     },
     {
       id: "lightIntensity",
-      type: "Light Intensity",
+      name: "Light Intensity",
       unit: "lux",
       value: 500,
       threshold: 11000,
@@ -67,7 +67,7 @@ export default {
     },
     {
       id: "pow",
-      type: "Power",
+      name: "Power",
       unit: "V",
       value: 75,
       threshold: 68,
@@ -76,7 +76,7 @@ export default {
     },
     {
       id: "pressure",
-      type: "Pressure",
+      name: "Pressure",
       unit: "KPa",
       value: 50,
       threshold: 50,
@@ -85,7 +85,7 @@ export default {
     },
     {
       id: "rainfall",
-      type: "Rainfall",
+      name: "Rainfall",
       unit: "mm",
       value: 0.45,
       threshold: 500,
@@ -94,7 +94,7 @@ export default {
     },
     {
       id: "windDirection",
-      type: "Wind Direction",
+      name: "Wind Direction",
       unit: "°",
       value: 100,
       threshold: "none",
@@ -103,7 +103,7 @@ export default {
     },
     {
       id: "windSpeed",
-      type: "Wind Speed",
+      name: "Wind Speed",
       unit: "m/s",
       value: 5,
       threshold: 5,

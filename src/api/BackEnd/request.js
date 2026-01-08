@@ -38,7 +38,7 @@ instance.interceptors.request.use(
     if (!whileList.includes(config.url)) {
       let tokenInfo = getToken();
       let remainTime = tokenInfo.expires - Date.now();
-      if (remainTime <= 1000 * 60 * 60) {
+      if (remainTime <= 1000 * 60 * 10) {
         // 如果正在刷新token，将当前请求加入队列
         if (isRefreshing) {
           return new Promise(resolve => {

@@ -2,11 +2,12 @@
 import { ref, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import cardData from "@/views/data/cardData";
+import { getThreshold,updateThresholdById } from "@/api/BackEnd/getThreshold";
 
 // 定义环境数据类型
 interface EnvironmentDataType {
   id: string;
-  type: string;
+  name: string;
   unit: string;
   value: number;
   threshold: number | string;
@@ -19,11 +20,56 @@ const environmentData = ref<EnvironmentDataType[]>([]);
 // 从cardData中获取环境数据
 environmentData.value = cardData.environmentData;
 
+const fetchData = async () => {
+  try {
+    const response = await getThreshold();
+    if (response.data.code == 200) {
+      const result = response.data.data.list
+      result.forEach(item => {
+        const envItem = environmentData.value.find(data => data.name == item.name)
+        if (envItem) {
+          envItem.threshold = item.value
+          envItem.thresholdType = getTypeString(item.type)
+          envItem.name = item.name
+          envItem.unit = item.unit
+          envItem.id = item.id
+        }
+      })
+      initThresholdInputs();
+    } else {
+      ElMessage.error("获取阈值失败");
+    }
+  } catch (error) {
+    console.error("获取阈值失败:", error);
+    ElMessage.error("获取阈值失败");
+  }
+};
+
+const getTypeString = (type: number) => {
+  if (type == 1) {
+    return "above"
+  } else if (type == 0) {
+    return "below"
+  } else {
+    return "none"
+  }
+}
+
+const getTypeNum = (type: string) => {
+  if (type == "above") {
+    return 1
+  } else if (type == "below") {
+    return 0
+  } else {
+    return 2
+  }
+}
+
 // 阈值类型选项
 const thresholdTypeOptions = [
   { value: "above", label: "Beyond threshold warning" },
   { value: "below", label: "Below threshold warning" },
-  { value: "none", label: "No comparison" }
+  { value: "none", label: "No comparison" },
 ];
 
 // 阈值类型映射
@@ -48,39 +94,32 @@ const initThresholdInputs = () => {
 };
 
 // 更新阈值的方法（暂留空）
-const updateThreshold = (id: string) => {
+const updateThreshold = async (id: string) => {
   const newValue = newThresholdValues.value[id];
-  const newType = newThresholdTypes.value[id];
+  const newType = getTypeNum(newThresholdTypes.value[id]);
+  console.log(newValue,newType,id)
 
-  if (newValue === undefined || newValue === "") {
+  if ((newValue === undefined || newValue === "") && newType != 2) {
     ElMessage.warning("请输入有效的阈值");
     return;
   }
 
-  // 这里是API调用的位置，暂时留空
-  // await api.updateThreshold(id, newValue, newType);
-
-  // 更新本地数据
   const item = environmentData.value.find(data => data.id === id);
-  if (item) {
-    item.threshold = newValue;
-    item.thresholdType = newType;
-    ElMessage.success(`${item.type} 阈值和类型更新成功`);
+  const data = {
+    value: newValue,
+    type: newType,
+    id: id
+  }
+  const res = await updateThresholdById(data)
+  if (res.data.code == 200) {
+    ElMessage.success(`${item.name} 阈值和类型更新成功`);
+  } else {
+    ElMessage.error(`${item.name} 阈值和类型更新失败`);
   }
 };
 
-// 重置所有阈值为默认值
-const resetAllThresholds = () => {
-  // 这里是API调用的位置，暂时留空
-  // await api.resetAllThresholds();
-
-  // 重置本地数据
-  environmentData.value = [...cardData.environmentData];
-  initThresholdInputs();
-  ElMessage.info("所有阈值已重置为默认值");
-};
-
 onMounted(() => {
+  fetchData();
   initThresholdInputs();
 });
 </script>
@@ -110,7 +149,7 @@ onMounted(() => {
             <div class="threshold-card-header">
               <IconifyIconOnline :icon="item.icon" class="threshold-icon" />
               <div class="threshold-info">
-                <h3 class="threshold-type">{{ item.type }}</h3>
+                <h3 class="threshold-type">{{ item.name }}</h3>
                 <p class="threshold-current">
                   Current threshold:
                   <span class="current-value"
@@ -131,7 +170,7 @@ onMounted(() => {
             <div class="threshold-input-group">
               <el-input
                 v-model="newThresholdValues[item.id]"
-                :placeholder="`输入新的${item.type}阈值`"
+                :placeholder="`输入新的${item.name}阈值`"
                 class="threshold-input"
                 clearable
               >
@@ -163,11 +202,6 @@ onMounted(() => {
         </el-col>
       </el-row>
 
-      <div class="threshold-actions">
-        <el-button type="warning" plain @click="resetAllThresholds">
-          重置所有阈值
-        </el-button>
-      </div>
     </div>
   </div>
 </template>
