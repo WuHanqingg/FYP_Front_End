@@ -1,15 +1,15 @@
 // axios.config.js
-import axios from 'axios';
+import axios from "axios";
 
 // 创建 axios 实例
 const instance = axios.create({
   //baseURL: 'http://182.40.193.119:8081', // 设置基础 URL
-  timeout: 10000, // 设置超时时间
+  timeout: 10000 // 设置超时时间
 });
 
 // 设置请求头信息
 //instance.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
-instance.defaults.headers.post['Content-Type'] = 'application/json';
+instance.defaults.headers.post["Content-Type"] = "application/json";
 
 // 请求拦截器
 instance.interceptors.request.use(

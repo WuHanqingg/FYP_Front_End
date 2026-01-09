@@ -58,7 +58,9 @@ interface ChartDataTypeConfig {
 }
 
 // 默认为风向数据
-const currentChartDataDetail = ref<ChartDataTypeConfig>(chartData.windDirectionData as ChartDataTypeConfig);
+const currentChartDataDetail = ref<ChartDataTypeConfig>(
+  chartData.windDirectionData as ChartDataTypeConfig
+);
 
 // 统计数据
 const statistics = reactive({
@@ -82,7 +84,7 @@ const calculateStatistics = () => {
     statistics.count = 0;
     return;
   }
-  
+
   const values = state.currentData.map(item => item.value);
   statistics.max = Math.max(...values);
   statistics.min = Math.min(...values);
@@ -91,7 +93,6 @@ const calculateStatistics = () => {
 };
 
 // 将calculateStatistics调用直接添加到updateChart函数内部
-
 
 // 初始化图表
 const initChart = () => {
@@ -104,20 +105,20 @@ const initChart = () => {
 // 更新图表
 const updateChart = () => {
   if (!windDirectionChart) return;
-  
+
   // 先计算统计数据
   calculateStatistics();
 
   const option = {
-    backgroundColor: '#fafafa',
+    backgroundColor: "#fafafa",
     title: {
       text: currentChartDataDetail.value.title,
       textStyle: {
         fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333'
+        fontWeight: "bold",
+        color: "#333"
       },
-      left: 'center',
+      left: "center",
       padding: [10, 0, 20, 0]
     },
     tooltip: {
@@ -126,22 +127,22 @@ const updateChart = () => {
         // 极简格式，只显示必要信息
         const { name, value, marker } = params[0];
         const { seriesName, unit } = currentChartDataDetail.value;
-        
+
         return `${name}<br/>${marker}${seriesName}: ${value} ${unit}`;
       },
-      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      backgroundColor: "rgba(0, 0, 0, 0.85)",
       borderColor: currentChartDataDetail.value.color,
       borderWidth: 1,
       textStyle: {
-        color: '#fff',
+        color: "#fff",
         fontSize: 12
       },
       padding: 10,
       borderRadius: 6,
       axisPointer: {
-        type: 'cross',
+        type: "cross",
         crossStyle: {
-          color: '#999'
+          color: "#999"
         }
       }
     },
@@ -157,8 +158,8 @@ const updateChart = () => {
         end: 100,
         height: 20,
         bottom: 10,
-        backgroundColor: '#f5f5f5',
-        borderColor: '#e8e8e8',
+        backgroundColor: "#f5f5f5",
+        borderColor: "#e8e8e8",
         fillerColor: `rgba(${currentChartDataDetail.value.color.slice(1)}, 0.2)`,
         handleStyle: {
           color: currentChartDataDetail.value.color
@@ -171,22 +172,22 @@ const updateChart = () => {
       data: state.currentData.map(item => item.time),
       axisLine: {
         lineStyle: {
-          color: '#ccc'
+          color: "#ccc"
         }
       },
       axisTick: {
         show: false
       },
       axisLabel: {
-        color: '#666',
+        color: "#666",
         fontSize: 12,
         rotate: 45
       },
       splitLine: {
         show: true,
         lineStyle: {
-          color: '#f0f0f0',
-          type: 'dashed'
+          color: "#f0f0f0",
+          type: "dashed"
         }
       }
     },
@@ -194,27 +195,27 @@ const updateChart = () => {
       type: "value",
       name: currentChartDataDetail.value.unit,
       nameTextStyle: {
-        color: '#666',
+        color: "#666",
         fontSize: 12
       },
       axisLine: {
         show: true,
         lineStyle: {
-          color: '#ccc'
+          color: "#ccc"
         }
       },
       axisTick: {
         show: false
       },
       axisLabel: {
-        color: '#666',
+        color: "#666",
         fontSize: 12
       },
       splitLine: {
         show: true,
         lineStyle: {
-          color: '#f0f0f0',
-          type: 'dashed'
+          color: "#f0f0f0",
+          type: "dashed"
         }
       }
     },
@@ -223,7 +224,7 @@ const updateChart = () => {
       top: 30,
       right: 30,
       textStyle: {
-        color: '#666',
+        color: "#666",
         fontSize: 12
       },
       itemWidth: 10,
@@ -233,36 +234,42 @@ const updateChart = () => {
     series: [
       {
         name: currentChartDataDetail.value.seriesName,
-        type: currentChartType.value === "area" ? "line" : currentChartType.value,
+        type:
+          currentChartType.value === "area" ? "line" : currentChartType.value,
         smooth: true,
         symbol: "circle",
         symbolSize: 6,
         // 为area chart添加专门的配置
-        areaStyle: currentChartType.value === "area" ? {
-          // 当选择Area Chart时，使用更明显的面积效果
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: currentChartDataDetail.value.color + '80' // 使用主题色，透明度50%
-            },
-            {
-              offset: 1,
-              color: currentChartDataDetail.value.color + '10' // 使用主题色，透明度10%
-            }
-          ])
-        } : currentChartType.value === "line" ? {
-          // 普通折线图使用较浅的面积效果
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: currentChartDataDetail.value.color + '20' // 使用主题色，透明度20%
-            },
-            {
-              offset: 1,
-              color: currentChartDataDetail.value.color + '05' // 使用主题色，透明度5%
-            }
-          ])
-        } : undefined,
+        areaStyle:
+          currentChartType.value === "area"
+            ? {
+                // 当选择Area Chart时，使用更明显的面积效果
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {
+                    offset: 0,
+                    color: currentChartDataDetail.value.color + "80" // 使用主题色，透明度50%
+                  },
+                  {
+                    offset: 1,
+                    color: currentChartDataDetail.value.color + "10" // 使用主题色，透明度10%
+                  }
+                ])
+              }
+            : currentChartType.value === "line"
+              ? {
+                  // 普通折线图使用较浅的面积效果
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: currentChartDataDetail.value.color + "20" // 使用主题色，透明度20%
+                    },
+                    {
+                      offset: 1,
+                      color: currentChartDataDetail.value.color + "05" // 使用主题色，透明度5%
+                    }
+                  ])
+                }
+              : undefined,
         lineStyle: {
           width: 2,
           color: currentChartDataDetail.value.color
@@ -280,8 +287,8 @@ const updateChart = () => {
       bottom: "10%",
       top: "15%",
       containLabel: true,
-      backgroundColor: '#fff',
-      borderColor: '#e8e8e8',
+      backgroundColor: "#fff",
+      borderColor: "#e8e8e8",
       borderWidth: 1,
       borderRadius: 8
     }
@@ -296,7 +303,12 @@ const updateDataType = () => {
   // 从chartData中获取对应的数据类型配置
   // 注意：chartData包含chartDataType和intervalOptions数组，所以需要确保只获取数据配置对象
   const config = chartData[type as keyof typeof chartData];
-  if (config && typeof config === 'object' && 'title' in config && 'unit' in config) {
+  if (
+    config &&
+    typeof config === "object" &&
+    "title" in config &&
+    "unit" in config
+  ) {
     // 确保config是数据配置对象，而不是数组
     currentChartDataDetail.value = config as ChartDataTypeConfig;
   }
@@ -378,10 +390,10 @@ const filterDataByInterval = (intervalMs: number) => {
     state.currentData = [];
     return;
   }
-  
+
   const filteredData = [state.originalData[0]];
   let lastTime = new Date(state.originalData[0].time).getTime();
-  
+
   for (let i = 1; i < state.originalData.length; i++) {
     const currentTime = new Date(state.originalData[i].time).getTime();
     if (currentTime - lastTime >= intervalMs) {
@@ -389,12 +401,12 @@ const filterDataByInterval = (intervalMs: number) => {
       lastTime = currentTime;
     }
   }
-  
+
   // 如果只有一个数据点，并且原始数据有多个，添加最后一个数据点以保证图表显示
   if (filteredData.length === 1 && state.originalData.length > 1) {
     filteredData.push(state.originalData[state.originalData.length - 1]);
   }
-  
+
   state.currentData = filteredData;
   updateChart();
 };
@@ -425,10 +437,12 @@ const resetDateRange = () => {
 
 const exportExcel = () => {
   const fileName = currentChartDataType.value + ".xlsx";
-  const exportData = state.currentData.map((item: { time: string; value: number }) => ({
-    time: item.time,
-    [currentChartDataDetail.value.seriesName]: item.value
-  }));
+  const exportData = state.currentData.map(
+    (item: { time: string; value: number }) => ({
+      time: item.time,
+      [currentChartDataDetail.value.seriesName]: item.value
+    })
+  );
   const ws = xlsx.utils.json_to_sheet(exportData);
   const wb = xlsx.utils.book_new();
   xlsx.utils.book_append_sheet(wb, ws, fileName);
@@ -436,17 +450,17 @@ const exportExcel = () => {
 };
 
 // 下载图表为图片
-const downloadChart = (type: 'png' | 'svg') => {
+const downloadChart = (type: "png" | "svg") => {
   if (!windDirectionChart) return;
-  
+
   const fileName = `${currentChartDataType.value}_${new Date().getTime()}.${type}`;
   const dataURL = windDirectionChart.getDataURL({
     type: type,
     pixelRatio: 2, // 提高图片质量
-    backgroundColor: '#fafafa'
+    backgroundColor: "#fafafa"
   });
-  
-  const link = document.createElement('a');
+
+  const link = document.createElement("a");
   link.href = dataURL;
   link.download = fileName;
   link.click();
@@ -469,7 +483,7 @@ onMounted(() => {
 <template>
   <div class="wind-direction-chart-container">
     <div class="header">
-      <div style="display: flex; gap: 10px; align-items: center;">
+      <div style="display: flex; gap: 10px; align-items: center">
         <el-select
           v-model="currentChartDataType"
           placeholder="Choose Data Type"
@@ -547,12 +561,16 @@ onMounted(() => {
         >
         <el-dropdown style="margin-left: 10px">
           <el-button>
-            Download Chart<i class="el-icon-arrow-down el-icon--right"></i>
+            Download Chart<i class="el-icon-arrow-down el-icon--right" />
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="downloadChart('png')">PNG Format</el-dropdown-item>
-              <el-dropdown-item @click="downloadChart('svg')">SVG Format</el-dropdown-item>
+              <el-dropdown-item @click="downloadChart('png')"
+                >PNG Format</el-dropdown-item
+              >
+              <el-dropdown-item @click="downloadChart('svg')"
+                >SVG Format</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -586,20 +604,32 @@ onMounted(() => {
       </div>
       <div class="statistic-item">
         <div class="statistic-label">Maximum</div>
-        <div class="statistic-value" :style="{ color: (currentChartDataDetail.value as any).color }">
-          {{ statistics.max.toFixed(2) }} {{ (currentChartDataDetail.value as any).unit }}
+        <div
+          class="statistic-value"
+          :style="{ color: (currentChartDataDetail.value as any).color }"
+        >
+          {{ statistics.max.toFixed(2) }}
+          {{ (currentChartDataDetail.value as any).unit }}
         </div>
       </div>
       <div class="statistic-item">
         <div class="statistic-label">Minimum</div>
-        <div class="statistic-value" :style="{ color: (currentChartDataDetail.value as any).color }">
-          {{ statistics.min.toFixed(2) }} {{ (currentChartDataDetail.value as any).unit }}
+        <div
+          class="statistic-value"
+          :style="{ color: (currentChartDataDetail.value as any).color }"
+        >
+          {{ statistics.min.toFixed(2) }}
+          {{ (currentChartDataDetail.value as any).unit }}
         </div>
       </div>
       <div class="statistic-item">
         <div class="statistic-label">Average</div>
-        <div class="statistic-value" :style="{ color: (currentChartDataDetail.value as any).color }">
-          {{ statistics.avg.toFixed(2) }} {{ (currentChartDataDetail.value as any).unit }}
+        <div
+          class="statistic-value"
+          :style="{ color: (currentChartDataDetail.value as any).color }"
+        >
+          {{ statistics.avg.toFixed(2) }}
+          {{ (currentChartDataDetail.value as any).unit }}
         </div>
       </div>
     </div>
@@ -681,7 +711,7 @@ onMounted(() => {
     padding: 15px;
     background-color: #f5f7fa;
     border-radius: 8px;
-    
+
     .statistic-item {
       flex: 1;
       text-align: center;
@@ -689,13 +719,13 @@ onMounted(() => {
       background-color: #fff;
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      
+
       .statistic-label {
         font-size: 12px;
         color: #909399;
         margin-bottom: 6px;
       }
-      
+
       .statistic-value {
         font-size: 20px;
         font-weight: bold;

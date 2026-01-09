@@ -175,7 +175,10 @@ router.beforeEach((to: ToRouteType, _from, next) => {
         addPathMatch();
         if (!useMultiTagsStoreHook().getMultiTagsCache) {
           const { path } = to;
-          const route = findRouteByPath(path, router.options.routes[0].children);
+          const route = findRouteByPath(
+            path,
+            router.options.routes[0].children
+          );
           getTopMenu(true);
           // query、params模式路由传参数的标签页不在此处处理
           if (route && route.meta?.title) {
@@ -185,14 +188,14 @@ router.beforeEach((to: ToRouteType, _from, next) => {
               useMultiTagsStoreHook().handleTags("push", {
                 path,
                 name,
-                meta,
+                meta
               });
             } else {
               const { path, name, meta } = route;
               useMultiTagsStoreHook().handleTags("push", {
                 path,
                 name,
-                meta,
+                meta
               });
             }
           }

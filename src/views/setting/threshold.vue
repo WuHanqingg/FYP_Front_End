@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import cardData from "@/views/data/cardData";
-import { getThreshold,updateThresholdById } from "@/api/BackEnd/getThreshold";
+import { getThreshold, updateThresholdById } from "@/api/BackEnd/getThreshold";
 
 // 定义环境数据类型
 interface EnvironmentDataType {
@@ -24,52 +24,53 @@ const fetchData = async () => {
   try {
     const response = await getThreshold();
     if (response.data.code == 200) {
-      const result = response.data.data.list
+      const result = response.data.data.list;
       result.forEach(item => {
-        const envItem = environmentData.value.find(data => data.name == item.name)
+        const envItem = environmentData.value.find(
+          data => data.name == item.name
+        );
         if (envItem) {
-          envItem.threshold = item.value
-          envItem.thresholdType = getTypeString(item.type)
-          envItem.name = item.name
-          envItem.unit = item.unit
-          envItem.id = item.id
+          envItem.threshold = item.value;
+          envItem.thresholdType = getTypeString(item.type);
+          envItem.name = item.name;
+          envItem.unit = item.unit;
+          envItem.id = item.id;
         }
-      })
+      });
       initThresholdInputs();
     } else {
-      ElMessage.error("获取阈值失败");
+      ElMessage.error("Failed to fetch threshold data");
     }
   } catch (error) {
-    console.error("获取阈值失败:", error);
-    ElMessage.error("获取阈值失败");
+    ElMessage.error("Failed to fetch threshold data");
   }
 };
 
 const getTypeString = (type: number) => {
   if (type == 1) {
-    return "above"
+    return "above";
   } else if (type == 0) {
-    return "below"
+    return "below";
   } else {
-    return "none"
+    return "none";
   }
-}
+};
 
 const getTypeNum = (type: string) => {
   if (type == "above") {
-    return 1
+    return 1;
   } else if (type == "below") {
-    return 0
+    return 0;
   } else {
-    return 2
+    return 2;
   }
-}
+};
 
 // 阈值类型选项
 const thresholdTypeOptions = [
   { value: "above", label: "Beyond threshold warning" },
   { value: "below", label: "Below threshold warning" },
-  { value: "none", label: "No comparison" },
+  { value: "none", label: "No comparison" }
 ];
 
 // 阈值类型映射
@@ -97,7 +98,7 @@ const initThresholdInputs = () => {
 const updateThreshold = async (id: string) => {
   const newValue = newThresholdValues.value[id];
   const newType = getTypeNum(newThresholdTypes.value[id]);
-  console.log(newValue,newType,id)
+  console.log(newValue, newType, id);
 
   if ((newValue === undefined || newValue === "") && newType != 2) {
     ElMessage.warning("请输入有效的阈值");
@@ -109,19 +110,20 @@ const updateThreshold = async (id: string) => {
     value: newValue,
     type: newType,
     id: id
-  }
-  const res = await updateThresholdById(data)
+  };
+  const res = await updateThresholdById(data);
   if (res.data.code == 200) {
     ElMessage.success(`${item.name} 阈值和类型更新成功`);
   } else {
     ElMessage.error(`${item.name} 阈值和类型更新失败`);
   }
 };
-
 onMounted(() => {
+  console.log("onMounted");
   fetchData();
   initThresholdInputs();
 });
+
 </script>
 
 <template>
@@ -201,14 +203,11 @@ onMounted(() => {
           </div>
         </el-col>
       </el-row>
-
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-
-
 // 响应式调整
 @media (width <= 768px) {
   .threshold-container {

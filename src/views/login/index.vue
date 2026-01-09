@@ -57,7 +57,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       } else {
         message("登录失败", { type: "error" });
       }
-      console.log(getToken().accessToken)
+      console.log(getToken().accessToken);
       //全部采取静态路由模式
       usePermissionStoreHook().handleWholeMenus([]);
       addPathMatch();
@@ -111,7 +111,7 @@ useEventListener(document, "keydown", ({ code }) => {
           <el-form
             ref="ruleFormRef"
             :model="ruleForm"
-            :rules="loginRules"
+            
             size="large"
           >
             <Motion :delay="100">

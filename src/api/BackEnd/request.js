@@ -1,30 +1,31 @@
 // axios.config.js
-import axios from 'axios';
-import { getToken, formatToken, setToken } from '@/utils/auth';
-import { refreshToken } from './getUser';
-import { message } from '@/utils/message';
+import axios from "axios";
+import { getToken, formatToken, setToken } from "@/utils/auth";
+import { refreshToken } from "./getUser";
+import { message } from "@/utils/message";
+import router from "@/router";
 
 // 创建 axios 实例
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL, // 设置基础 URL
-  timeout: 10000, // 设置超时时间
+  timeout: 10000 // 设置超时时间
 });
 
 // 设置请求头信息
 //instance.defaults.headers.common['Authorization'] = formatToken(getToken().accessToken);
-instance.defaults.headers.post['Content-Type'] = 'application/json';
+instance.defaults.headers.post["Content-Type"] = "application/json";
 
 // 定义刷新token的状态和请求队列
 let isRefreshing = false;
 let refreshSubscribers = [];
 
 // 将等待刷新的请求添加到队列
-const subscribeTokenRefresh = (callback) => {
+const subscribeTokenRefresh = callback => {
   refreshSubscribers.push(callback);
 };
 
 // 通知所有等待的请求继续执行
-const onRefreshed = (token) => {
+const onRefreshed = token => {
   refreshSubscribers.forEach(callback => callback(token));
   refreshSubscribers = [];
 };
@@ -34,7 +35,7 @@ instance.interceptors.request.use(
   async config => {
     // 在发送请求之前做些什么
     // console.log('请求拦截器：', config);
-    const whileList = ['/login', '/refreshToken'];
+    const whileList = ["/login", "/refreshToken"];
     if (!whileList.includes(config.url)) {
       let tokenInfo = getToken();
       let remainTime = tokenInfo.expires - Date.now();
@@ -90,15 +91,17 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   response => {
     // 对响应数据做点什么
-    //console.log('响应拦截器：', response);
     return response;
   },
   error => {
     // 对响应错误做点什么
+    if (error.response && error.response.status == 401) {
+      console.log("响应拦截器：", error);
+      message("Unauthorized", { type: "error" });
+      router.push("/welcome");
+    }
     return Promise.reject(error);
   }
 );
-
-
 
 export default instance;

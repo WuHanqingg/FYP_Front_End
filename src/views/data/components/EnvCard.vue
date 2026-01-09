@@ -66,11 +66,11 @@ const computeProgress = () => {
     return 100;
   }
   if (props.data.thresholdType === "above") {
-    const progress = (props.data.value / (props.data.threshold)) * 100;
+    const progress = (props.data.value / props.data.threshold) * 100;
     return Math.min(Math.max(progress, 0), 100);
   }
   if (props.data.thresholdType === "below") {
-    const progress = 1 / (props.data.value / (props.data.threshold)) * 100;
+    const progress = (1 / (props.data.value / props.data.threshold)) * 100;
     return Math.min(Math.max(progress, 0), 100);
   }
   return 100;
@@ -110,17 +110,23 @@ const getStatusText = () => {
         <div
           class="env-card__progress-bar"
           :style="{ width: computeProgress() + '%' }"
-        ></div>
+        />
       </div>
 
       <div class="env-card__info">
         <div class="env-card__threshold-info">
           <div class="env-card__threshold">
             <i class="threshold-icon ri-lock-line" />
-            <span class="threshold-text">Threshold: {{ data.threshold }}{{ data.unit }}</span>
+            <span class="threshold-text"
+              >Threshold: {{ data.threshold }}{{ data.unit }}</span
+            >
           </div>
           <div class="env-card__threshold-type">
-            {{ thresholdTypeMap[data.thresholdType as keyof typeof thresholdTypeMap] }}
+            {{
+              thresholdTypeMap[
+                data.thresholdType as keyof typeof thresholdTypeMap
+              ]
+            }}
           </div>
         </div>
       </div>
@@ -166,7 +172,11 @@ const getStatusText = () => {
   }
 
   &--normal {
-    background: linear-gradient(135deg, rgba(82, 196, 26, 0.03) 0%, rgba(255, 255, 255, 1) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(82, 196, 26, 0.03) 0%,
+      rgba(255, 255, 255, 1) 100%
+    );
 
     &::before {
       background: linear-gradient(180deg, #52c41a 0%, #73d13d 100%);
@@ -175,7 +185,11 @@ const getStatusText = () => {
   }
 
   &--warning {
-    background: linear-gradient(135deg, rgba(250, 173, 20, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(250, 173, 20, 0.05) 0%,
+      rgba(255, 255, 255, 1) 100%
+    );
 
     &::before {
       background: linear-gradient(180deg, #faad14 0%, #ffc53d 100%);
@@ -184,7 +198,11 @@ const getStatusText = () => {
   }
 
   &--danger {
-    background: linear-gradient(135deg, rgba(255, 77, 79, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 77, 79, 0.08) 0%,
+      rgba(255, 255, 255, 1) 100%
+    );
 
     &::before {
       background: linear-gradient(180deg, #ff4d4f 0%, #ff7875 100%);
@@ -271,7 +289,11 @@ const getStatusText = () => {
       font-size: 48px;
       font-weight: 700;
       line-height: 1;
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.65) 100%);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.88) 0%,
+        rgba(0, 0, 0, 0.65) 100%
+      );
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;

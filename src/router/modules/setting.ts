@@ -20,11 +20,11 @@ export default {
       }
     },
     {
-      path: "/chartSetting",
-      name: "chartSetting",
-      component: () => import("@/views/setting/chart.vue"),
+      path: "/userSetting",
+      name: "userSetting",
+      component: () => import("@/views/setting/user.vue"),
       meta: {
-        title: "ChartSetting"
+        title: "UserSetting"
       }
     }
   ]
