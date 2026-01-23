@@ -26,8 +26,8 @@ export function getDataWithTimeStamp(
   keys = "",
   startTs = Date.now(),
   endTs = Date.now(),
-  interval = 0,
-  limit = 1440,
+  interval = 1000 * 60 * 60 * 24,
+  limit = 43200,
   agg = "NONE",
   token
 ) {

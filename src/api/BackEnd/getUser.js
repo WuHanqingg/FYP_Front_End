@@ -26,10 +26,14 @@ export function testToken() {
   });
 }
 
-export function getUsers() {
+export function getUsers(pageNo, pageSize) {
   return request({
     url: "/users/loadDataList",
-    method: "get"
+    method: "get",
+    params: {
+      pageNo: pageNo,
+      pageSize: pageSize
+    }
   });
 }
 

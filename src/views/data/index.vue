@@ -73,7 +73,7 @@ const onCurrentChange = (current: number) => {
           ).filter(v => v.id.toLowerCase().includes(searchValue.toLowerCase()))
             .length === 0
         "
-        :description="`${searchValue} 暂无数据`"
+        :description="`${searchValue} No Data Found, Please Refresh`"
       />
       <template v-if="pagination.total > 0">
         <el-row :gutter="16">

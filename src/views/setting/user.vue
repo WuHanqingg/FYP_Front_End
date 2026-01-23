@@ -104,17 +104,14 @@ const filteredUsers = computed(() => {
     );
   }
 
-  // Pagination
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return result.slice(start, end);
+  return result;
 });
 
 // Fetch users from API
 const fetchUsers = async () => {
   loading.value = true;
   try {
-    const response = await getUsers();
+    const response = await getUsers(currentPage.value, pageSize.value);
     if (response.data.data && response.data.data.list) {
       users.value = response.data.data.list;
       total.value = response.data.data.totalCount;
@@ -272,18 +269,21 @@ const switchActive = async (user: User) => {
 }
 
 // Handle pagination changes
-const handleSizeChange = (size: number) => {
+const handleSizeChange = async (size: number) => {
   pageSize.value = size;
   currentPage.value = 1;
+  await fetchUsers();
 };
 
-const handleCurrentChange = (current: number) => {
+const handleCurrentChange = async (current: number) => {
   currentPage.value = current;
+  await fetchUsers();
 };
 
 // Handle search
-const handleSearch = () => {
+const handleSearch = async () => {
   currentPage.value = 1;
+  await fetchUsers();
 };
 
 // Fetch users on component mount

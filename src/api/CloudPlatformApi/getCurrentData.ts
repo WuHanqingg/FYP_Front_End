@@ -1,10 +1,8 @@
-import { ref } from "vue";
 import {
   getToken,
   getCurrentData,
   getDataWithTimeStamp
 } from "@/api/CloudPlatformApi/getData";
-import cardData from "@/views/data/cardData";
 
 export async function getWeatherData() {
   const token = await getToken();
@@ -18,7 +16,7 @@ export async function getHistoryData(
   startTs = Date.now(),
   endTs = Date.now(),
   interval = 0,
-  limit = 1440,
+  limit = 43200,
   agg = "NONE"
 ) {
   const token = await getToken();

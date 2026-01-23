@@ -55,14 +55,14 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       if (res.data.code == 200) {
         setToken(res.data.data);
       } else {
-        message("登录失败", { type: "error" });
+        message("Login Failed, Please Check Your Credentials", { type: "error" });
       }
       console.log(getToken().accessToken);
       //全部采取静态路由模式
       usePermissionStoreHook().handleWholeMenus([]);
       addPathMatch();
       router.push(getTopMenu(true).path);
-      message("登录成功", { type: "success" });
+      message("Login Successful", { type: "success" });
       loading.value = false;
     }
   });

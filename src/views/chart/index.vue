@@ -4,6 +4,7 @@ import * as echarts from "echarts";
 import { getHistoryData } from "@/api/CloudPlatformApi/getCurrentData";
 import chartData from "@/views/data/chartData";
 import * as xlsx from "xlsx";
+import { ElMessage } from "element-plus";
 
 // 图表实例
 const chartRef = ref<HTMLDivElement | null>(null);
@@ -33,7 +34,13 @@ const state = reactive({
   // 是否显示自定义输入框
   showCustomInterval: false,
   // 原始数据备份，用户自定义间隔用
-  originalData: [] as { time: string; value: number }[]
+  originalData: [] as { time: string; value: number }[],
+  // 批处理进度
+  batchProgress: 0,
+  // 总批次数
+  totalBatches: 0,
+  // 当前批次
+  currentBatch: 0
 });
 
 // 图表类型选项
@@ -150,7 +157,13 @@ const updateChart = () => {
       {
         type: "inside",
         start: 0,
-        end: 100
+        end: 100,
+        // 支持鼠标滚轮缩放
+        zoomOnMouseWheel: true,
+        // 支持拖拽平移
+        moveOnMouseMove: true,
+        // 支持点击缩放
+        moveOnMouseWheel: true
       },
       {
         type: "slider",
@@ -163,7 +176,13 @@ const updateChart = () => {
         fillerColor: `rgba(${currentChartDataDetail.value.color.slice(1)}, 0.2)`,
         handleStyle: {
           color: currentChartDataDetail.value.color
-        }
+        },
+        // 显示缩放按钮
+        showDetail: true,
+        // 显示数据范围
+        showDataShadow: "auto",
+        // 缩放时保持选中范围的中心位置
+        zoomLock: false
       }
     ],
     xAxis: {
@@ -180,8 +199,18 @@ const updateChart = () => {
       },
       axisLabel: {
         color: "#666",
-        fontSize: 12,
-        rotate: 45
+        fontSize: 11,
+        rotate: 45,
+        // 自动调整标签间隔，放大时显示更多标签
+        interval: 'auto',
+        // 标签过多时自动隐藏，保证可读性
+        hideOverlap: true,
+        // 自动旋转标签以适应空间
+        autoRotate: true,
+        // 省略过长的标签
+        formatter: (value: string) => {
+          return value.length > 16 ? value.substring(0, 16) + '...' : value;
+        }
       },
       splitLine: {
         show: true,
@@ -189,6 +218,13 @@ const updateChart = () => {
           color: "#f0f0f0",
           type: "dashed"
         }
+      },
+      // 添加滚动条配置
+      scrollbar: {
+        show: true,
+        type: "inside",
+        height: 8,
+        bottom: 20
       }
     },
     yAxis: {
@@ -282,9 +318,9 @@ const updateChart = () => {
       }
     ],
     grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "10%",
+      left: "4%",
+      right: "6%",
+      bottom: "12%",
       top: "15%",
       containLabel: true,
       backgroundColor: "#fff",
@@ -319,6 +355,10 @@ const updateDataType = () => {
 // 获取风向数据
 const fetchChartData = async () => {
   state.loading = true;
+  // 重置批处理状态
+  state.batchProgress = 0;
+  state.totalBatches = 0;
+  state.currentBatch = 0;
 
   try {
     // 确定时间范围
@@ -334,49 +374,149 @@ const fetchChartData = async () => {
       startTs = endTs - 24 * 60 * 60 * 1000;
     }
 
-    // 计算limit值，确保获取足够的数据点
+    // 定义一个月的时间常量（30天）
+    const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;
     const timeRange = endTs - startTs;
 
-    // 调用API获取风向历史数据
-    const res = await getHistoryData(
-      currentChartDataDetail.value.apiRequestName, // keys参数，指定获取风向数据
-      startTs, // 开始时间戳
-      endTs, // 结束时间戳
-      0,
-      1440,
-      "NONE"
-    );
+    // 判断是否需要分批次获取
+    if (timeRange <= ONE_MONTH_MS) {
+      // 时间范围不超过一个月，直接获取数据
+      state.totalBatches = 1;
+      state.currentBatch = 1;
+      
+      const res = await getHistoryData(
+        currentChartDataDetail.value.apiRequestName,
+        startTs,
+        endTs,
+        0,
+        43200,
+        "NONE"
+      );
 
-    // 处理API返回的数据
-    if (res[currentChartDataDetail.value.apiRequestName]) {
-      // 将API返回的数据转换为图表所需格式
-      const formattedData = res[currentChartDataDetail.value.apiRequestName]
-        .map((item: { ts: number; value: string }) => ({
-          time: new Date(item.ts).toISOString().slice(0, 16).replace("T", " "),
-          value: parseFloat(item.value)
-        }))
-        // 按时间排序
-        .sort(
-          (a: { time: string }, b: { time: string }) =>
-            new Date(a.time).getTime() - new Date(b.time).getTime()
-        );
-      state.currentData = formattedData;
-      // 备份原始数据
-      state.originalData = formattedData;
+      state.batchProgress = 100;
+      processChartData(res);
     } else {
-      state.currentData = [];
-    }
+      // 时间范围超过一个月，需要分批次获取
+      const batchSize = ONE_MONTH_MS;
+      const numBatches = Math.ceil(timeRange / batchSize);
+      state.totalBatches = numBatches;
+      state.currentBatch = 1;
+      
+      // 创建批次时间范围数组
+      const batchPromises = [];
+      for (let i = 0; i < numBatches; i++) {
+        const batchStart = startTs + i * batchSize;
+        const batchEnd = Math.min(batchStart + batchSize - 1, endTs);
+        
+        batchPromises.push(
+          getHistoryData(
+            currentChartDataDetail.value.apiRequestName,
+            batchStart,
+            batchEnd,
+            0,
+            43200,
+            "NONE"
+          ).then(result => {
+            // 更新当前批次和进度
+            state.currentBatch += 1;
+            state.batchProgress = Math.round(((i + 1) / numBatches) * 100);
+            return result;
+          })
+        );
+      }
 
-    // 更新图表
-    nextTick(() => {
-      updateChart();
-    });
+      // 并行执行所有批次请求，使用allSettled处理部分失败的情况
+      const batchResults = await Promise.allSettled(batchPromises);
+      
+      // 合并成功批次的数据
+      const allData: any[] = [];
+      let successCount = 0;
+      let failCount = 0;
+      
+      batchResults.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          successCount++;
+          const batchData = result.value;
+          if (batchData && batchData[currentChartDataDetail.value.apiRequestName]) {
+            allData.push(...batchData[currentChartDataDetail.value.apiRequestName]);
+          }
+        } else {
+          failCount++;
+          console.error(`Batch ${index + 1} data fetch failed:`, result.reason);
+        }
+      });
+
+      // 如果有成功获取的数据
+      if (successCount > 0) {
+        const res = {
+          [currentChartDataDetail.value.apiRequestName]: allData
+        };
+        processChartData(res);
+        
+        // 如果有失败的批次，显示警告信息
+        if (failCount > 0) {
+          console.warn(`Data fetch completed, ${successCount} batches succeeded, ${failCount} batches failed`);
+        }
+      } else {
+        // 所有批次都失败了
+        throw new Error('All batches failed to fetch data');
+      }
+    }
   } catch (error) {
-    console.error("获取数据失败:", error);
+    console.error("Failed to fetch data:", error);
     state.currentData = [];
   } finally {
     state.loading = false;
+    // 重置批处理进度显示
+    setTimeout(() => {
+      state.batchProgress = 0;
+      state.totalBatches = 0;
+      state.currentBatch = 0;
+    }, 2000);
   }
+};
+
+// 处理图表数据的公共函数
+const processChartData = (res: any) => {
+  if (res[currentChartDataDetail.value.apiRequestName]) {
+    // 将API返回的数据转换为图表所需格式
+    const formattedData = res[currentChartDataDetail.value.apiRequestName]
+      .map((item: { ts: number; value: string }) => ({
+        time: new Date(item.ts).toISOString().slice(0, 16).replace("T", " "),
+        value: parseFloat(item.value)
+      }))
+      // 按时间排序
+      .sort(
+        (a: { time: string }, b: { time: string }) =>
+          new Date(a.time).getTime() - new Date(b.time).getTime()
+      );
+    
+    // 性能优化：如果数据点过多，进行抽样显示
+    const maxDataPoints = 3000; // 进一步限制最大数据点数量以保证性能
+    let finalData = formattedData;
+    if (formattedData.length > maxDataPoints) {
+      const step = Math.ceil(formattedData.length / maxDataPoints);
+      // 确保包含第一个和最后一个数据点
+      finalData = [formattedData[0]];
+      for (let i = step; i < formattedData.length - 1; i += step) {
+        finalData.push(formattedData[i]);
+      }
+      finalData.push(formattedData[formattedData.length - 1]);
+      // 确保包含第一个和最后一个数据点
+      ElMessage.warning(`Total ${formattedData.length} data points, displayed ${finalData.length} points to ensure performance`);
+    }
+    
+    state.currentData = finalData;
+    // 备份原始数据
+    state.originalData = formattedData;
+  } else {
+    state.currentData = [];
+  }
+
+  // 更新图表
+  nextTick(() => {
+    updateChart();
+  });
 };
 
 // 处理时间范围变化
@@ -437,7 +577,8 @@ const resetDateRange = () => {
 
 const exportExcel = () => {
   const fileName = currentChartDataType.value + ".xlsx";
-  const exportData = state.currentData.map(
+  // Use original full data for export, but display filtered data for chart
+  const exportData = state.originalData.map(
     (item: { time: string; value: number }) => ({
       time: item.time,
       [currentChartDataDetail.value.seriesName]: item.value
@@ -593,6 +734,23 @@ onMounted(() => {
             />
           </template>
         </el-skeleton>
+        
+        <!-- 批处理进度指示器 -->
+        <div v-if="state.totalBatches > 1" class="batch-progress">
+          <div class="progress-info">
+            <span>Data fetch progress: {{ state.currentBatch }}/{{ state.totalBatches }} batches</span>
+            <span style="margin-left: 20px">{{ state.batchProgress }}%</span>
+          </div>
+          <el-progress 
+            :percentage="state.batchProgress" 
+            :stroke-width="8"
+            :show-text="false"
+            style="width: 80%; margin: 10px auto;"
+          />
+          <div class="progress-note" v-if="state.totalBatches > 1">
+            <small>Time Range over 1 month, fetching data in batches...</small>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -688,8 +846,10 @@ onMounted(() => {
     position: relative;
 
     .chart {
-      min-height: 400px;
-    }
+        min-height: 400px;
+        width: 100%;
+        overflow: hidden;
+      }
 
     .loading {
       position: absolute;
@@ -731,6 +891,35 @@ onMounted(() => {
         font-weight: bold;
         color: #303133;
       }
+    }
+  }
+
+  .batch-progress {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    text-align: center;
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #606266;
+    }
+
+    .progress-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #909399;
     }
   }
 

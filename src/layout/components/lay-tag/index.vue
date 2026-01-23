@@ -659,7 +659,7 @@ onBeforeUnmount(() => {
       </ul>
     </transition>
     <!-- 右侧功能按钮 -->
-    <el-dropdown
+    <!-- <el-dropdown
       trigger="click"
       placement="bottom-end"
       @command="handleCommand"
@@ -681,7 +681,7 @@ onBeforeUnmount(() => {
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
-    </el-dropdown>
+    </el-dropdown> -->
   </div>
 </template>
 
