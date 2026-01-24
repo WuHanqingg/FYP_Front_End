@@ -55,7 +55,9 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       if (res.data.code == 200) {
         setToken(res.data.data);
       } else {
-        message("Login Failed, Please Check Your Credentials", { type: "error" });
+        message("Login Failed, Please Check Your Credentials", {
+          type: "error"
+        });
       }
       console.log(getToken().accessToken);
       //全部采取静态路由模式
@@ -103,23 +105,18 @@ useEventListener(document, "keydown", ({ code }) => {
       </div>
       <div class="login-box">
         <div class="login-form">
-          <avatar class="avatar" />
+          <!-- <avatar class="avatar" /> -->
           <Motion>
             <h2 class="outline-hidden">{{ title }}</h2>
-          </Motion>
+          </Motion> 
 
-          <el-form
-            ref="ruleFormRef"
-            :model="ruleForm"
-            
-            size="large"
-          >
+          <el-form ref="ruleFormRef" :model="ruleForm" size="large">
             <Motion :delay="100">
               <el-form-item
                 :rules="[
                   {
                     required: true,
-                    message: '请输入账号',
+                    message: 'Please enter your username', 
                     trigger: 'blur'
                   }
                 ]"
@@ -128,7 +125,7 @@ useEventListener(document, "keydown", ({ code }) => {
                 <el-input
                   v-model="ruleForm.username"
                   clearable
-                  placeholder="账号"
+                  placeholder="Username"
                   :prefix-icon="useRenderIcon(User)"
                 />
               </el-form-item>
@@ -140,7 +137,7 @@ useEventListener(document, "keydown", ({ code }) => {
                   v-model="ruleForm.password"
                   clearable
                   show-password
-                  placeholder="密码"
+                  placeholder="Password"
                   :prefix-icon="useRenderIcon(Lock)"
                 />
               </el-form-item>
@@ -155,7 +152,7 @@ useEventListener(document, "keydown", ({ code }) => {
                 :disabled="disabled"
                 @click="onLogin(ruleFormRef)"
               >
-                登录
+                Login
               </el-button>
             </Motion>
           </el-form>

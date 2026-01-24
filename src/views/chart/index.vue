@@ -202,14 +202,14 @@ const updateChart = () => {
         fontSize: 11,
         rotate: 45,
         // 自动调整标签间隔，放大时显示更多标签
-        interval: 'auto',
+        interval: "auto",
         // 标签过多时自动隐藏，保证可读性
         hideOverlap: true,
         // 自动旋转标签以适应空间
         autoRotate: true,
         // 省略过长的标签
         formatter: (value: string) => {
-          return value.length > 16 ? value.substring(0, 16) + '...' : value;
+          return value.length > 16 ? value.substring(0, 16) + "..." : value;
         }
       },
       splitLine: {
@@ -383,7 +383,7 @@ const fetchChartData = async () => {
       // 时间范围不超过一个月，直接获取数据
       state.totalBatches = 1;
       state.currentBatch = 1;
-      
+
       const res = await getHistoryData(
         currentChartDataDetail.value.apiRequestName,
         startTs,
@@ -401,13 +401,13 @@ const fetchChartData = async () => {
       const numBatches = Math.ceil(timeRange / batchSize);
       state.totalBatches = numBatches;
       state.currentBatch = 1;
-      
+
       // 创建批次时间范围数组
       const batchPromises = [];
       for (let i = 0; i < numBatches; i++) {
         const batchStart = startTs + i * batchSize;
         const batchEnd = Math.min(batchStart + batchSize - 1, endTs);
-        
+
         batchPromises.push(
           getHistoryData(
             currentChartDataDetail.value.apiRequestName,
@@ -427,18 +427,23 @@ const fetchChartData = async () => {
 
       // 并行执行所有批次请求，使用allSettled处理部分失败的情况
       const batchResults = await Promise.allSettled(batchPromises);
-      
+
       // 合并成功批次的数据
       const allData: any[] = [];
       let successCount = 0;
       let failCount = 0;
-      
+
       batchResults.forEach((result, index) => {
-        if (result.status === 'fulfilled') {
+        if (result.status === "fulfilled") {
           successCount++;
           const batchData = result.value;
-          if (batchData && batchData[currentChartDataDetail.value.apiRequestName]) {
-            allData.push(...batchData[currentChartDataDetail.value.apiRequestName]);
+          if (
+            batchData &&
+            batchData[currentChartDataDetail.value.apiRequestName]
+          ) {
+            allData.push(
+              ...batchData[currentChartDataDetail.value.apiRequestName]
+            );
           }
         } else {
           failCount++;
@@ -452,14 +457,16 @@ const fetchChartData = async () => {
           [currentChartDataDetail.value.apiRequestName]: allData
         };
         processChartData(res);
-        
+
         // 如果有失败的批次，显示警告信息
         if (failCount > 0) {
-          console.warn(`Data fetch completed, ${successCount} batches succeeded, ${failCount} batches failed`);
+          console.warn(
+            `Data fetch completed, ${successCount} batches succeeded, ${failCount} batches failed`
+          );
         }
       } else {
         // 所有批次都失败了
-        throw new Error('All batches failed to fetch data');
+        throw new Error("All batches failed to fetch data");
       }
     }
   } catch (error) {
@@ -490,7 +497,7 @@ const processChartData = (res: any) => {
         (a: { time: string }, b: { time: string }) =>
           new Date(a.time).getTime() - new Date(b.time).getTime()
       );
-    
+
     // 性能优化：如果数据点过多，进行抽样显示
     const maxDataPoints = 3000; // 进一步限制最大数据点数量以保证性能
     let finalData = formattedData;
@@ -503,9 +510,11 @@ const processChartData = (res: any) => {
       }
       finalData.push(formattedData[formattedData.length - 1]);
       // 确保包含第一个和最后一个数据点
-      ElMessage.warning(`Total ${formattedData.length} data points, displayed ${finalData.length} points to ensure performance`);
+      ElMessage.warning(
+        `Total ${formattedData.length} data points, displayed ${finalData.length} points to ensure performance`
+      );
     }
-    
+
     state.currentData = finalData;
     // 备份原始数据
     state.originalData = formattedData;
@@ -734,20 +743,25 @@ onMounted(() => {
             />
           </template>
         </el-skeleton>
-        
+
         <!-- 批处理进度指示器 -->
         <div v-if="state.totalBatches > 1" class="batch-progress">
           <div class="progress-info">
-            <span>Data fetch progress: {{ state.currentBatch }}/{{ state.totalBatches }} batches</span>
+            <span
+              >Data fetch progress: {{ state.currentBatch }}/{{
+                state.totalBatches
+              }}
+              batches</span
+            >
             <span style="margin-left: 20px">{{ state.batchProgress }}%</span>
           </div>
-          <el-progress 
-            :percentage="state.batchProgress" 
+          <el-progress
+            :percentage="state.batchProgress"
             :stroke-width="8"
             :show-text="false"
-            style="width: 80%; margin: 10px auto;"
+            style="width: 80%; margin: 10px auto"
           />
-          <div class="progress-note" v-if="state.totalBatches > 1">
+          <div v-if="state.totalBatches > 1" class="progress-note">
             <small>Time Range over 1 month, fetching data in batches...</small>
           </div>
         </div>
@@ -846,10 +860,10 @@ onMounted(() => {
     position: relative;
 
     .chart {
-        min-height: 400px;
-        width: 100%;
-        overflow: hidden;
-      }
+      min-height: 400px;
+      width: 100%;
+      overflow: hidden;
+    }
 
     .loading {
       position: absolute;

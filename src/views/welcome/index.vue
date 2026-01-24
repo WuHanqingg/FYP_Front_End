@@ -6,5 +6,6 @@ defineOptions({
 </script>
 
 <template>
-  This Page is the Welcome Page But I have no idea what to put here right now :).
+  This Page is the Welcome Page But I have no idea what to put here right now
+  :).
 </template>

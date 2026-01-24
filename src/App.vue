@@ -1,6 +1,6 @@
 <template>
   <el-config-provider :locale="currentLocale">
-    <router-view :key="$route.fullPath"/>
+    <router-view :key="$route.fullPath" />
     <ReDialog />
   </el-config-provider>
 </template>

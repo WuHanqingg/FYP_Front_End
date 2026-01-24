@@ -123,7 +123,6 @@ onMounted(() => {
   fetchData();
   initThresholdInputs();
 });
-
 </script>
 
 <template>

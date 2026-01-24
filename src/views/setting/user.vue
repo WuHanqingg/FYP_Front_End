@@ -203,8 +203,8 @@ const resetPassword = async () => {
         const data = {
           id: resetPwdForm.userId,
           passwordHash: resetPwdForm.password
-        }
-        const res = await updateUsersById(data, resetPwdForm.userId)
+        };
+        const res = await updateUsersById(data, resetPwdForm.userId);
         if (res.data.code == 200) {
           ElMessage.success("Password reset successfully");
         } else {
@@ -254,19 +254,20 @@ const deleteUser = (user: User) => {
 
 const switchActive = async (user: User) => {
   loading.value = true;
-  try{const res = await updateUsersById(user);
-  if (res.data.code == 200) {
-    ElMessage.success("User status updated successfully");
-  } else {
-    ElMessage.error("Failed to update user status");
-  }
+  try {
+    const res = await updateUsersById(user);
+    if (res.data.code == 200) {
+      ElMessage.success("User status updated successfully");
+    } else {
+      ElMessage.error("Failed to update user status");
+    }
   } catch (error) {
     ElMessage.error("Operation failed, please try again");
     console.error("Error switching user status:", error);
   } finally {
     loading.value = false;
   }
-}
+};
 
 // Handle pagination changes
 const handleSizeChange = async (size: number) => {
@@ -334,8 +335,8 @@ onMounted(() => {
             v-model="scope.row.isActive"
             :active-value="1"
             :inactive-value="0"
-            @change="switchActive(scope.row)"
             :disabled="scope.row.username === 'admin'"
+            @change="switchActive(scope.row)"
           />
         </template>
       </el-table-column>
@@ -391,7 +392,7 @@ onMounted(() => {
           <el-input v-model="formData.id" disabled />
         </el-form-item>
         <el-form-item label="Account" prop="username">
-          <el-input v-model="formData.username" :disabled = "formData.id !== 0" />
+          <el-input v-model="formData.username" :disabled="formData.id !== 0" />
         </el-form-item>
         <el-form-item label="Nick Name" prop="fullName">
           <el-input v-model="formData.fullName" />
