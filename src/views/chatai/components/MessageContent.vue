@@ -23,6 +23,8 @@ const formattedContent = computed(() => {
 
   let formatted = props.content;
 
+  formatted = filterToolCalls(formatted);
+
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   formatted = formatted.replace(/\*(.*?)\*/g, "<em>$1</em>");
   formatted = formatted.replace(
@@ -41,6 +43,24 @@ const formattedContent = computed(() => {
 
   return formatted;
 });
+
+function filterToolCalls(content: string): string {
+  const lines = content.split('\n');
+  const filteredLines = lines.filter(line => {
+    const trimmedLine = line.trim();
+    if (trimmedLine.startsWith('行动:') || trimmedLine.startsWith('Action:')) {
+      return false;
+    }
+    if (trimmedLine.match(/^(行动|Action):\s*\{.*\}$/)) {
+      return false;
+    }
+    if (trimmedLine.match(/^\{.*"name".*"params".*\}$/)) {
+      return false;
+    }
+    return true;
+  });
+  return filteredLines.join('\n');
+}
 
 function escapeHtml(text: string): string {
   const div = document.createElement("div");
