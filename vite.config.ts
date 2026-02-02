@@ -38,7 +38,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           rewrite: (path) => path.replace(/^\/cloud/, ''),
         },
         '/weatherMonitor': {
-          target: 'http://localhost:8080',
+          target: 'http://localhost:8081',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/weatherMonitor/, ''),
         },

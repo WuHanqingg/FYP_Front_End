@@ -34,7 +34,7 @@ const toggleClick = () => {
 <template>
   <div
     v-tippy="{
-      content: isActive ? '点击折叠' : '点击展开',
+      content: isActive ? 'Collapse' : 'Expand',
       theme: tooltipEffect,
       hideOnClick: 'toggle',
       placement: 'right'

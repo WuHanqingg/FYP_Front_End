@@ -108,7 +108,7 @@ useEventListener(document, "keydown", ({ code }) => {
           <!-- <avatar class="avatar" /> -->
           <Motion>
             <h2 class="outline-hidden">{{ title }}</h2>
-          </Motion> 
+          </Motion>
 
           <el-form ref="ruleFormRef" :model="ruleForm" size="large">
             <Motion :delay="100">
@@ -116,7 +116,7 @@ useEventListener(document, "keydown", ({ code }) => {
                 :rules="[
                   {
                     required: true,
-                    message: 'Please enter your username', 
+                    message: 'Please enter your username',
                     trigger: 'blur'
                   }
                 ]"
