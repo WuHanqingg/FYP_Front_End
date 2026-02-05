@@ -59,7 +59,6 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           type: "error"
         });
       }
-      console.log(getToken().accessToken);
       //全部采取静态路由模式
       usePermissionStoreHook().handleWholeMenus([]);
       addPathMatch();
@@ -67,6 +66,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       message("Login Successful", { type: "success" });
       loading.value = false;
     }
+    loading.value = false;
   });
 };
 

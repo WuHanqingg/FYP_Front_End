@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { storageLocal } from "../utils";
 
 export interface Message {
   id: string;
@@ -38,25 +37,22 @@ export const useChatStore = defineStore("chat", () => {
     return currentConversation.value?.messages || [];
   });
 
-  const STORAGE_KEY = "ai-data-analysis-conversations";
+  function hasEmptyConversation(): boolean {
+    return conversations.value.some(c => c.messages.length === 0);
+  }
 
-  function loadFromStorage() {
-    const stored = storageLocal().getItem<Conversation[]>(STORAGE_KEY);
-    if (stored) {
-      conversations.value = stored;
-      if (conversations.value.length > 0 && !currentConversationId.value) {
-        currentConversationId.value = conversations.value[0].id;
-      }
+  function getEmptyConversation(): Conversation | null {
+    return conversations.value.find(c => c.messages.length === 0) || null;
+  }
+
+  function createConversation(id: string, title?: string) {
+    const emptyConversation = getEmptyConversation();
+    if (emptyConversation) {
+      currentConversationId.value = emptyConversation.id;
+      return emptyConversation;
     }
-  }
 
-  function saveToStorage() {
-    storageLocal().setItem(STORAGE_KEY, conversations.value);
-  }
-
-  function createConversation(title?: string) {
     messageIdCounter.value++;
-    const id = `${Date.now()}-${messageIdCounter.value}`;
     const newConversation: Conversation = {
       id,
       title: title || `Analysis ${conversations.value.length + 1}`,
@@ -66,8 +62,59 @@ export const useChatStore = defineStore("chat", () => {
     };
     conversations.value.unshift(newConversation);
     currentConversationId.value = id;
-    saveToStorage();
     return newConversation;
+  }
+
+  function loadConversationsFromAPI(conversationList: Array<{ conversation_id: string; title: string }>) {
+    conversations.value = conversationList.map(conv => ({
+      id: conv.conversation_id,
+      title: conv.title,
+      messages: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  }
+
+  function loadConversationDetail(conversationDetail: {
+    conversation_id: string;
+    username: string;
+    title: string;
+    messages: Array<{
+      sender: string;
+      receiver: string;
+      timestamp: string;
+      content: string;
+    }>;
+    generated_files: any[];
+    created_at: string;
+    updated_at: string;
+  }, currentUsername: string) {
+    const existingIndex = conversations.value.findIndex(
+      c => c.id === conversationDetail.conversation_id
+    );
+
+    const messages: Message[] = conversationDetail.messages.map((msg, idx) => ({
+      id: `${conversationDetail.conversation_id}-${idx}`,
+      role: msg.sender === currentUsername ? "user" : "assistant",
+      content: msg.content,
+      timestamp: new Date(msg.timestamp).getTime()
+    }));
+
+    const conversation: Conversation = {
+      id: conversationDetail.conversation_id,
+      title: conversationDetail.title,
+      messages,
+      createdAt: new Date(conversationDetail.created_at).getTime(),
+      updatedAt: new Date(conversationDetail.updated_at).getTime()
+    };
+
+    if (existingIndex !== -1) {
+      conversations.value[existingIndex] = conversation;
+    } else {
+      conversations.value.unshift(conversation);
+    }
+
+    currentConversationId.value = conversationDetail.conversation_id;
   }
 
   function deleteConversation(id: string) {
@@ -77,7 +124,6 @@ export const useChatStore = defineStore("chat", () => {
       if (currentConversationId.value === id) {
         currentConversationId.value = conversations.value[0]?.id || null;
       }
-      saveToStorage();
     }
   }
 
@@ -86,7 +132,6 @@ export const useChatStore = defineStore("chat", () => {
     if (conversation) {
       conversation.title = newTitle;
       conversation.updatedAt = Date.now();
-      saveToStorage();
     }
   }
 
@@ -103,7 +148,6 @@ export const useChatStore = defineStore("chat", () => {
 
     conversation.messages.push(newMessage);
     conversation.updatedAt = Date.now();
-    saveToStorage();
     return newMessage;
   }
 
@@ -115,7 +159,6 @@ export const useChatStore = defineStore("chat", () => {
     if (message) {
       Object.assign(message, updates);
       conversation.updatedAt = Date.now();
-      saveToStorage();
     }
   }
 
@@ -127,7 +170,6 @@ export const useChatStore = defineStore("chat", () => {
     if (index !== -1) {
       conversation.messages.splice(index, 1);
       conversation.updatedAt = Date.now();
-      saveToStorage();
     }
   }
 
@@ -162,7 +204,6 @@ export const useChatStore = defineStore("chat", () => {
   function clearAllConversations() {
     conversations.value = [];
     currentConversationId.value = null;
-    saveToStorage();
   }
 
   function switchConversation(id: string) {
@@ -171,8 +212,6 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
-  loadFromStorage();
-
   return {
     conversations,
     currentConversationId,
@@ -180,6 +219,8 @@ export const useChatStore = defineStore("chat", () => {
     currentMessages,
     isStreaming,
     createConversation,
+    loadConversationsFromAPI,
+    loadConversationDetail,
     deleteConversation,
     renameConversation,
     addMessage,

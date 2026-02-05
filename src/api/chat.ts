@@ -1,5 +1,7 @@
 import axios from "axios";
 import type { Message } from "@/store/modules/chat";
+import { storageLocal } from "@pureadmin/utils";
+import { userKey, type DataInfo } from "@/utils/auth";
 
 export interface ChatCompletionRequest {
   messages: Array<{ role: string; content: string }>;
@@ -24,17 +26,63 @@ export interface StreamChunk {
   }>;
 }
 
+export interface ConversationListItem {
+  conversation_id: string;
+  title: string;
+}
+
+export interface ConversationDetail {
+  conversation_id: string;
+  username: string;
+  title: string;
+  messages: Array<{
+    sender: string;
+    receiver: string;
+    timestamp: string;
+    content: string;
+  }>;
+  generated_files: Array<{
+    filename: string;
+    filepath: string;
+    generated_time: string;
+    file_type: string;
+  }>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface APIResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  conversations?: ConversationListItem[];
+  conversation?: ConversationDetail;
+  message?: string;
+  count?: number;
+}
+
 export class ChatAPI {
   private baseURL = "http://localhost:5000/api/chat/completions";
+  private conversationsBaseURL = "http://localhost:5000/api/conversations";
+
+  private generateConversationId(): string {
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;
+  }
 
   async sendMessage(
     messages: Message[],
     onChunk: (chunk: string) => void,
     onComplete: () => void,
     onError: (error: Error) => void,
-    abortController: AbortController
+    abortController: AbortController,
+    conversationId?: string,
+    title?: string
   ): Promise<void> {
     try {
+      const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+      const username = userInfo?.username || "";
+      const chatId = conversationId || this.generateConversationId();
+
       const response = await fetch(this.baseURL, {
         method: "POST",
         headers: {
@@ -45,7 +93,10 @@ export class ChatAPI {
             role: m.role,
             content: m.content
           })),
-          stream: true
+          stream: true,
+          username,
+          conversation_id: chatId,
+          title
         }),
         signal: abortController.signal
       });
@@ -115,9 +166,15 @@ export class ChatAPI {
 
   async sendMessageNonStream(
     messages: Message[],
-    abortController: AbortController
+    abortController: AbortController,
+    conversationId?: string,
+    title?: string
   ): Promise<string> {
     try {
+      const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+      const username = userInfo?.username || "";
+      const chatId = conversationId || this.generateConversationId();
+
       const response = await axios.post(
         this.baseURL,
         {
@@ -125,7 +182,10 @@ export class ChatAPI {
             role: m.role,
             content: m.content
           })),
-          stream: false
+          stream: false,
+          username,
+          conversation_id: chatId,
+          title
         },
         {
           signal: abortController.signal,
@@ -139,6 +199,106 @@ export class ChatAPI {
         throw new Error("Request was cancelled");
       }
       throw error;
+    }
+  }
+
+  async getUserConversations(username: string): Promise<ConversationListItem[]> {
+    try {
+      const response = await fetch(
+        `${this.conversationsBaseURL}?username=${encodeURIComponent(username)}`
+      );
+      const data: APIResponse<ConversationListItem[]> = await response.json();
+
+      if (data.success && data.conversations) {
+        return data.conversations;
+      } else {
+        throw new Error(data.error || "Failed to fetch conversations");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Unknown error occurred while fetching conversations");
+    }
+  }
+
+  async getConversationDetail(
+    conversationId: string,
+    username: string
+  ): Promise<ConversationDetail> {
+    try {
+      const response = await fetch(
+        `${this.conversationsBaseURL}/${encodeURIComponent(conversationId)}?username=${encodeURIComponent(username)}`
+      );
+      const data: APIResponse<ConversationDetail> = await response.json();
+
+      if (data.success && data.conversation) {
+        return data.conversation;
+      } else {
+        throw new Error(data.error || "Failed to fetch conversation detail");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Unknown error occurred while fetching conversation detail");
+    }
+  }
+
+  async deleteConversation(
+    conversationId: string,
+    username: string
+  ): Promise<boolean> {
+    try {
+      const response = await fetch(
+        `${this.conversationsBaseURL}/${encodeURIComponent(conversationId)}/delete?username=${encodeURIComponent(username)}`
+      );
+      const data: APIResponse<boolean> = await response.json();
+
+      if (data.success) {
+        return true;
+      } else {
+        throw new Error(data.error || "Failed to delete conversation");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Unknown error occurred while deleting conversation");
+    }
+  }
+
+  async updateConversationTitle(
+    conversationId: string,
+    username: string,
+    title: string
+  ): Promise<ConversationDetail> {
+    try {
+      const response = await fetch(
+        `${this.conversationsBaseURL}/${encodeURIComponent(conversationId)}/title`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            username,
+            title
+          })
+        }
+      );
+      const data: APIResponse<ConversationDetail> = await response.json();
+
+      if (data.success && data.conversation) {
+        return data.conversation;
+      } else {
+        throw new Error(data.error || "Failed to update conversation title");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Unknown error occurred while updating conversation title");
     }
   }
 }

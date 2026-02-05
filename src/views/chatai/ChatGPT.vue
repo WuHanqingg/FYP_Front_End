@@ -39,6 +39,8 @@ import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useChatStore } from "@/store/modules/chat";
 import { chatAPI } from "@/api/chat";
 import { message } from "@/utils/message";
+import { storageLocal } from "@pureadmin/utils";
+import { userKey } from "@/utils/auth";
 import Navbar from "./components/Navbar.vue";
 import Sidebar from "./components/Sidebar.vue";
 import ChatArea from "./components/ChatArea.vue";
@@ -46,42 +48,117 @@ import InputArea from "./components/InputArea.vue";
 
 const chatStore = useChatStore();
 const autoScroll = ref(true);
-onMounted(() => {
-  if (!chatStore.currentConversationId) {
-    chatStore.createConversation("New Conversation");
+
+function getUsername(): string {
+  const userInfo = storageLocal().getItem(userKey);
+  return userInfo?.username || "";
+}
+
+async function fetchConversations() {
+  const username = getUsername();
+  if (!username) {
+    message("Please log in to access conversations", { type: "warning" });
+    return;
   }
+
+  try {
+    const conversations = await chatAPI.getUserConversations(username);
+    chatStore.loadConversationsFromAPI(conversations);
+
+    if (conversations.length > 0 && !chatStore.currentConversationId) {
+      chatStore.switchConversation(conversations[0].conversation_id);
+      await loadConversationDetail(conversations[0].conversation_id);
+    }
+  } catch (error) {
+    console.error("Failed to fetch conversations:", error);
+    message("Failed to load conversations. Please try again.", { type: "error" });
+  }
+}
+
+async function loadConversationDetail(conversationId: string) {
+  const username = getUsername();
+  if (!username) return;
+
+  try {
+    const detail = await chatAPI.getConversationDetail(conversationId, username);
+    chatStore.loadConversationDetail(detail, username);
+  } catch (error) {
+    console.error("Failed to load conversation detail:", error);
+    message("Failed to load conversation messages", { type: "error" });
+  }
+}
+
+onMounted(() => {
+  fetchConversations();
 });
 
 onUnmounted(() => {
   chatStore.abortCurrentRequest();
 });
 
-function selectConversation(id: string) {
+async function selectConversation(id: string) {
   chatStore.switchConversation(id);
+  await loadConversationDetail(id);
 }
 
 function createNewConversation() {
-  chatStore.createConversation("New Analysis");
+  const conversationId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+  chatStore.createConversation(conversationId, "New Analysis");
 }
 
-function deleteConversation(id: string) {
-  chatStore.deleteConversation(id);
+async function deleteConversation(id: string) {
+  const username = getUsername();
+  if (!username) {
+    message("Please log in to delete conversations", { type: "warning" });
+    return;
+  }
+
+  try {
+    await chatAPI.deleteConversation(id, username);
+    chatStore.deleteConversation(id);
+    message("Conversation deleted successfully", { type: "success" });
+  } catch (error) {
+    console.error("Failed to delete conversation:", error);
+    message("Failed to delete conversation. Please try again.", { type: "error" });
+  }
 }
 
-function renameConversation(id: string, newTitle: string) {
-  chatStore.renameConversation(id, newTitle);
+async function renameConversation(id: string, newTitle: string) {
+  const username = getUsername();
+  if (!username) {
+    message("Please log in to rename conversations", { type: "warning" });
+    return;
+  }
+
+  try {
+    await chatAPI.updateConversationTitle(id, username, newTitle);
+    chatStore.renameConversation(id, newTitle);
+    message("Conversation renamed successfully", { type: "success" });
+  } catch (error) {
+    console.error("Failed to rename conversation:", error);
+    message("Failed to rename conversation. Please try again.", { type: "error" });
+  }
 }
 
 async function sendMessage(content: string) {
   if (!content.trim()) return;
 
+  const trimmedContent = content.trim();
+  let title: string | undefined;
+  let conversationId: string | undefined;
+
   if (!chatStore.currentConversationId) {
-    chatStore.createConversation("New Analysis");
+    conversationId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+    title = trimmedContent.substring(0, 20);
+    chatStore.createConversation(conversationId, title);
+  } else {
+    conversationId = chatStore.currentConversationId;
+    title = chatStore.currentConversation?.title;
   }
 
   chatStore.addMessage({
     role: "user",
-    content: content.trim()
+    content: trimmedContent
   });
 
   const abortController = new AbortController();
@@ -127,7 +204,9 @@ async function sendMessage(content: string) {
         chatStore.setAbortController(null);
         message(`Error: ${error.message}`, { type: "error" });
       },
-      abortController
+      abortController,
+      conversationId,
+      title
     );
   } catch (error) {
     chatStore.updateMessage(assistantMessage.id, {
