@@ -70,6 +70,8 @@ declare global {
     VITE_CDN: boolean;
     VITE_HIDE_HOME: string;
     VITE_COMPRESSION: ViteCompression;
+    /** AI 聊天 API 基础路径，默认 /chatai（走 vite 代理） */
+    VITE_AI_API_BASE?: string;
   }
 
   /**

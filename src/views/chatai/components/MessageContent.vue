@@ -26,24 +26,15 @@ const props = defineProps<{
   isStreaming?: boolean;
 }>();
 
-// Check if we should show thinking state
-// Show thinking when:
-// 1. No content yet and streaming
-// 2. Content only contains "Thought:" section but not "Answer:" section yet
+// 流式时：仅当出现 Answer 后才展示内容，否则显示 Thinking
+// 后端 ReAct 输出: Thought -> Action -> [Observation] -> Answer
 const showThinkingState = computed(() => {
   if (!props.isStreaming) return false;
-  if (!props.content) return true;
+  if (!props.content?.trim()) return true;
 
-  const hasThought = props.content.includes("Thought:");
   const hasAnswer = props.content.includes("Answer:");
-
-  // If we have Thought but no Answer yet, we're still processing
-  if (hasThought && !hasAnswer) return true;
-
-  // If no content at all, show thinking
-  if (!props.content.trim()) return true;
-
-  return false;
+  // 无 Answer 时一律显示 Thinking（含 Thought/Action/Observation 等中间过程）
+  return !hasAnswer;
 });
 
 const formattedContent = computed(() => {
@@ -75,29 +66,41 @@ const formattedContent = computed(() => {
   return formatted;
 });
 
-// Extract only the Answer section, filtering out Thought section
+/**
+ * 仅对 assistant 的 ReAct 输出提取最终回答，过滤 Thought/Action/Observation
+ * 用户消息无 Answer:，直接原样返回
+ */
 function extractAnswerSection(content: string): string {
-  const answerIndex = content.indexOf("Answer:");
+  const answerIndex = content.lastIndexOf("Answer:");
   if (answerIndex !== -1) {
-    // Return content after "Answer:" (skip the label itself)
-    const afterAnswer = content.substring(answerIndex + 7); // 7 = length of "Answer:"
-    // Remove leading whitespace/newlines
+    const afterAnswer = content.substring(answerIndex + 7);
     return afterAnswer.replace(/^\s*/, "");
   }
+  // 无 Answer 时原样返回（用户消息或非 ReAct 格式）
   return content;
 }
 
+/** 过滤工具调用、Observation 等中间输出（用于 Answer 前的兼容处理） */
 function filterToolCalls(content: string): string {
   const lines = content.split("\n");
   const filteredLines = lines.filter(line => {
     const trimmedLine = line.trim();
+    // Action / 行动
     if (trimmedLine.startsWith("行动:") || trimmedLine.startsWith("Action:")) {
       return false;
     }
     if (trimmedLine.match(/^(行动|Action):\s*\{.*\}$/)) {
       return false;
     }
-    if (trimmedLine.match(/^\{.*"name".*"params".*\}$/)) {
+    if (trimmedLine.match(/^\{["\s]*"name["\s]*:.*"params["\s]*:.*\}$/)) {
+      return false;
+    }
+    // [Observation] 或 Observation: (工具执行结果)
+    if (trimmedLine.startsWith("[Observation]") || trimmedLine.startsWith("Observation:")) {
+      return false;
+    }
+    // Thought: 段（推理过程，仅展示最终 Answer）
+    if (trimmedLine.startsWith("Thought:") || trimmedLine.startsWith("思考:")) {
       return false;
     }
     return true;

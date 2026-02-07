@@ -73,9 +73,7 @@ async function fetchConversations() {
     }
   } catch (error) {
     console.error("Failed to fetch conversations:", error);
-    message("Failed to load conversations. Please try again.", {
-      type: "error"
-    });
+    message("Failed to load conversations. Please try again.", { type: "error" });
   }
 }
 
@@ -84,10 +82,7 @@ async function loadConversationDetail(conversationId: string) {
   if (!username) return;
 
   try {
-    const detail = await chatAPI.getConversationDetail(
-      conversationId,
-      username
-    );
+    const detail = await chatAPI.getConversationDetail(conversationId, username);
     chatStore.loadConversationDetail(detail, username);
   } catch (error) {
     console.error("Failed to load conversation detail:", error);
@@ -126,9 +121,7 @@ async function deleteConversation(id: string) {
     message("Conversation deleted successfully", { type: "success" });
   } catch (error) {
     console.error("Failed to delete conversation:", error);
-    message("Failed to delete conversation. Please try again.", {
-      type: "error"
-    });
+    message("Failed to delete conversation. Please try again.", { type: "error" });
   }
 }
 
@@ -145,9 +138,7 @@ async function renameConversation(id: string, newTitle: string) {
     message("Conversation renamed successfully", { type: "success" });
   } catch (error) {
     console.error("Failed to rename conversation:", error);
-    message("Failed to rename conversation. Please try again.", {
-      type: "error"
-    });
+    message("Failed to rename conversation. Please try again.", { type: "error" });
   }
 }
 
@@ -199,12 +190,16 @@ async function sendMessage(content: string) {
           content: fullContent
         });
       },
-      () => {
+      async () => {
         chatStore.updateMessage(assistantMessage.id, {
           isStreaming: false
         });
         chatStore.setStreaming(false);
         chatStore.setAbortController(null);
+        // 流结束后刷新对话详情，同步后端可能新生成的 generated_files
+        if (conversationId) {
+          await loadConversationDetail(conversationId);
+        }
       },
       (error: Error) => {
         chatStore.updateMessage(assistantMessage.id, {

@@ -66,9 +66,12 @@ export interface APIResponse<T> {
   count?: number;
 }
 
+// 开发环境走 vite 代理 /chatai -> localhost:5000，生产需配置相同代理
+const AI_API_BASE = import.meta.env.VITE_AI_API_BASE ?? "/chatai";
+
 export class ChatAPI {
-  private baseURL = "http://localhost:5000/api/chat/completions";
-  private conversationsBaseURL = "http://localhost:5000/api/conversations";
+  private baseURL = `${AI_API_BASE}/api/chat/completions`;
+  private conversationsBaseURL = `${AI_API_BASE}/api/conversations`;
 
   private generateConversationId(): string {
     return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;
@@ -140,13 +143,19 @@ export class ChatAPI {
           if (trimmedLine.startsWith("data: ")) {
             try {
               const jsonStr = trimmedLine.slice(6);
-              const data: StreamChunk = JSON.parse(jsonStr);
+              const data = JSON.parse(jsonStr) as StreamChunk & { error?: string };
+
+              // 后端错误格式: { error: "错误信息" }
+              if (data.error) {
+                onError(new Error(data.error));
+                return;
+              }
 
               if (data.choices && data.choices[0]?.delta?.content) {
                 onChunk(data.choices[0].delta.content);
               }
 
-              if (data.choices[0]?.finish_reason) {
+              if (data.choices?.[0]?.finish_reason) {
                 onComplete();
                 return;
               }
@@ -207,9 +216,7 @@ export class ChatAPI {
     }
   }
 
-  async getUserConversations(
-    username: string
-  ): Promise<ConversationListItem[]> {
+  async getUserConversations(username: string): Promise<ConversationListItem[]> {
     try {
       const response = await fetch(
         `${this.conversationsBaseURL}?username=${encodeURIComponent(username)}`
@@ -248,9 +255,7 @@ export class ChatAPI {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error(
-        "Unknown error occurred while fetching conversation detail"
-      );
+      throw new Error("Unknown error occurred while fetching conversation detail");
     }
   }
 
@@ -307,9 +312,7 @@ export class ChatAPI {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error(
-        "Unknown error occurred while updating conversation title"
-      );
+      throw new Error("Unknown error occurred while updating conversation title");
     }
   }
 
@@ -320,7 +323,7 @@ export class ChatAPI {
   ): Promise<Blob> {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/files/download?file_id=${encodeURIComponent(fileId)}&username=${encodeURIComponent(username)}&conversation_id=${encodeURIComponent(conversationId)}`,
+        `${AI_API_BASE}/api/files/download?file_id=${encodeURIComponent(fileId)}&username=${encodeURIComponent(username)}&conversation_id=${encodeURIComponent(conversationId)}`,
         {
           method: "GET",
           headers: {

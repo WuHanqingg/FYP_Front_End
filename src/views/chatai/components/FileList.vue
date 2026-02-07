@@ -1,12 +1,7 @@
 <template>
   <div class="file-list-container">
     <div class="file-list-header">
-      <svg
-        class="file-icon"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
+      <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -29,19 +24,14 @@
         @click="downloadFile(file)"
       >
         <div class="file-info">
-          <div class="file-name" :title="file.filename">
-            {{ file.filename }}
-          </div>
+          <div class="file-name" :title="file.filename">{{ file.filename }}</div>
           <div class="file-meta">
             <span class="file-type">{{ file.file_type.toUpperCase() }}</span>
             <span class="file-size">{{ formatFileSize(file.file_size) }}</span>
             <span class="file-time">{{ formatTime(file.generated_time) }}</span>
           </div>
         </div>
-        <button
-          class="file-download-btn"
-          :disabled="downloadingId === file.file_id"
-        >
+        <button class="file-download-btn" :disabled="downloadingId === file.file_id">
           <svg
             v-if="downloadingId !== file.file_id"
             class="download-icon"
@@ -56,7 +46,7 @@
               d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
             />
           </svg>
-          <span v-else class="loading-spinner" />
+          <span v-else class="loading-spinner"></span>
         </button>
       </div>
     </div>
@@ -83,8 +73,8 @@ function getUsername(): string {
   return userInfo?.username || "";
 }
 
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
+function formatFileSize(bytes: number | undefined): string {
+  if (bytes == null || bytes === 0 || !Number.isFinite(bytes)) return "0 B";
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
