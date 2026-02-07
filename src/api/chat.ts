@@ -31,6 +31,16 @@ export interface ConversationListItem {
   title: string;
 }
 
+export interface GeneratedFile {
+  file_id: string;
+  filename: string;
+  file_type: string;
+  file_size: number;
+  generated_time: string;
+  created_by: string;
+  conversation_id: string;
+}
+
 export interface ConversationDetail {
   conversation_id: string;
   username: string;
@@ -41,12 +51,7 @@ export interface ConversationDetail {
     timestamp: string;
     content: string;
   }>;
-  generated_files: Array<{
-    filename: string;
-    filepath: string;
-    generated_time: string;
-    file_type: string;
-  }>;
+  generated_files: GeneratedFile[];
   created_at: string;
   updated_at: string;
 }
@@ -202,7 +207,9 @@ export class ChatAPI {
     }
   }
 
-  async getUserConversations(username: string): Promise<ConversationListItem[]> {
+  async getUserConversations(
+    username: string
+  ): Promise<ConversationListItem[]> {
     try {
       const response = await fetch(
         `${this.conversationsBaseURL}?username=${encodeURIComponent(username)}`
@@ -241,7 +248,9 @@ export class ChatAPI {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error("Unknown error occurred while fetching conversation detail");
+      throw new Error(
+        "Unknown error occurred while fetching conversation detail"
+      );
     }
   }
 
@@ -298,7 +307,46 @@ export class ChatAPI {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error("Unknown error occurred while updating conversation title");
+      throw new Error(
+        "Unknown error occurred while updating conversation title"
+      );
+    }
+  }
+
+  async downloadFile(
+    fileId: string,
+    username: string,
+    conversationId: string
+  ): Promise<Blob> {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/files/download?file_id=${encodeURIComponent(fileId)}&username=${encodeURIComponent(username)}&conversation_id=${encodeURIComponent(conversationId)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("File not found");
+        } else if (response.status === 403) {
+          throw new Error("Access denied");
+        } else if (response.status === 410) {
+          throw new Error("File has expired");
+        } else {
+          throw new Error(`Download failed: ${response.statusText}`);
+        }
+      }
+
+      return await response.blob();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Unknown error occurred while downloading file");
     }
   }
 }

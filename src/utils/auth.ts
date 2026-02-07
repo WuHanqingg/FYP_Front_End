@@ -54,8 +54,8 @@ export function setToken(data: DataInfo<number>) {
 
   expires > 0
     ? Cookies.set(TokenKey, cookieString, {
-      expires: expires - Date.now() // 86400000
-    })
+        expires: expires - Date.now() // 86400000
+      })
     : Cookies.set(TokenKey, cookieString);
 
   Cookies.set(
@@ -63,8 +63,8 @@ export function setToken(data: DataInfo<number>) {
     "true",
     isRemembered
       ? {
-        expires: loginDay
-      }
+          expires: loginDay
+        }
       : {}
   );
 

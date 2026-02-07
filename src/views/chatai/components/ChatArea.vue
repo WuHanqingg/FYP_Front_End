@@ -129,17 +129,26 @@
       </div>
 
       <div ref="scrollAnchor" class="scroll-anchor" />
+
+      <FileList
+        v-if="generatedFiles.length > 0"
+        :files="generatedFiles"
+        :conversation-id="conversationId"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
-import type { Message } from "@/store/modules/chat";
+import type { Message, GeneratedFile } from "@/store/modules/chat";
 import MessageContent from "./MessageContent.vue";
+import FileList from "./FileList.vue";
 
 const props = defineProps<{
   messages: Message[];
+  generatedFiles: GeneratedFile[];
+  conversationId: string;
   isStreaming: boolean;
   autoScroll: boolean;
 }>();

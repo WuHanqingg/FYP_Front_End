@@ -10,10 +10,21 @@ export interface Message {
   error?: string;
 }
 
+export interface GeneratedFile {
+  file_id: string;
+  filename: string;
+  file_type: string;
+  file_size: number;
+  generated_time: string;
+  created_by: string;
+  conversation_id: string;
+}
+
 export interface Conversation {
   id: string;
   title: string;
   messages: Message[];
+  generatedFiles: GeneratedFile[];
   createdAt: number;
   updatedAt: number;
 }
@@ -57,6 +68,7 @@ export const useChatStore = defineStore("chat", () => {
       id,
       title: title || `Analysis ${conversations.value.length + 1}`,
       messages: [],
+      generatedFiles: [],
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
@@ -65,30 +77,36 @@ export const useChatStore = defineStore("chat", () => {
     return newConversation;
   }
 
-  function loadConversationsFromAPI(conversationList: Array<{ conversation_id: string; title: string }>) {
+  function loadConversationsFromAPI(
+    conversationList: Array<{ conversation_id: string; title: string }>
+  ) {
     conversations.value = conversationList.map(conv => ({
       id: conv.conversation_id,
       title: conv.title,
       messages: [],
+      generatedFiles: [],
       createdAt: Date.now(),
       updatedAt: Date.now()
     }));
   }
 
-  function loadConversationDetail(conversationDetail: {
-    conversation_id: string;
-    username: string;
-    title: string;
-    messages: Array<{
-      sender: string;
-      receiver: string;
-      timestamp: string;
-      content: string;
-    }>;
-    generated_files: any[];
-    created_at: string;
-    updated_at: string;
-  }, currentUsername: string) {
+  function loadConversationDetail(
+    conversationDetail: {
+      conversation_id: string;
+      username: string;
+      title: string;
+      messages: Array<{
+        sender: string;
+        receiver: string;
+        timestamp: string;
+        content: string;
+      }>;
+      generated_files: GeneratedFile[];
+      created_at: string;
+      updated_at: string;
+    },
+    currentUsername: string
+  ) {
     const existingIndex = conversations.value.findIndex(
       c => c.id === conversationDetail.conversation_id
     );
@@ -100,10 +118,14 @@ export const useChatStore = defineStore("chat", () => {
       timestamp: new Date(msg.timestamp).getTime()
     }));
 
+    const generatedFiles: GeneratedFile[] =
+      conversationDetail.generated_files || [];
+
     const conversation: Conversation = {
       id: conversationDetail.conversation_id,
       title: conversationDetail.title,
       messages,
+      generatedFiles,
       createdAt: new Date(conversationDetail.created_at).getTime(),
       updatedAt: new Date(conversationDetail.updated_at).getTime()
     };
