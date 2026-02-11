@@ -1,18 +1,23 @@
 <template>
   <div class="chat-container h-screen flex flex-col bg-white dark:bg-gray-900">
-    <Navbar />
+    <Navbar @toggle-sidebar="toggleSidebar" />
 
     <div class="flex-1 flex overflow-hidden">
       <Sidebar
         :conversations="chatStore.conversations"
         :current-id="chatStore.currentConversationId"
+        :class="{ 'sidebar-open': sidebarOpen }"
         @select="selectConversation"
         @create="createNewConversation"
         @delete="deleteConversation"
         @rename="renameConversation"
+        @close="toggleSidebar"
       />
 
-      <div class="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900">
+      <div
+        class="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900 main-content"
+        :class="{ 'sidebar-open': sidebarOpen }"
+      >
         <ChatArea
           :messages="chatStore.currentMessages"
           :generated-files="chatStore.currentConversation?.generatedFiles || []"
@@ -33,6 +38,12 @@
         />
       </div>
     </div>
+
+    <div
+      v-if="sidebarOpen"
+      class="sidebar-overlay"
+      @click="toggleSidebar"
+    />
   </div>
 </template>
 
@@ -50,6 +61,7 @@ import InputArea from "./components/InputArea.vue";
 
 const chatStore = useChatStore();
 const autoScroll = ref(true);
+const sidebarOpen = ref(false);
 
 function getUsername(): string {
   const userInfo = storageLocal().getItem(userKey);
@@ -98,14 +110,24 @@ onUnmounted(() => {
   chatStore.abortCurrentRequest();
 });
 
+function toggleSidebar() {
+  sidebarOpen.value = !sidebarOpen.value;
+}
+
 async function selectConversation(id: string) {
   chatStore.switchConversation(id);
   await loadConversationDetail(id);
+  if (window.innerWidth < 1024) {
+    sidebarOpen.value = false;
+  }
 }
 
 function createNewConversation() {
   const conversationId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
   chatStore.createConversation(conversationId, "New Analysis");
+  if (window.innerWidth < 1024) {
+    sidebarOpen.value = false;
+  }
 }
 
 async function deleteConversation(id: string) {
@@ -196,7 +218,6 @@ async function sendMessage(content: string) {
         });
         chatStore.setStreaming(false);
         chatStore.setAbortController(null);
-        // 流结束后刷新对话详情，同步后端可能新生成的 generated_files
         if (conversationId) {
           await loadConversationDetail(conversationId);
         }
@@ -275,5 +296,60 @@ function handleScroll({
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+
+  &.sidebar-open {
+    opacity: 1;
+    visibility: visible;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+}
+
+.main-content {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @media (max-width: 1023px) {
+    &.sidebar-open {
+      transform: translateX(280px);
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    &.sidebar-open {
+      transform: translateX(240px);
+    }
+  }
+}
+
+.sidebar {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+
+  @media (max-width: 1023px) {
+    box-shadow: none;
+
+    &.sidebar-open {
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    }
+  }
 }
 </style>

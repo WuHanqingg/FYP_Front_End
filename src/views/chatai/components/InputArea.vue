@@ -104,6 +104,10 @@ watch(
   border-top: 1px solid var(--aero-border-glass);
   backdrop-filter: blur(var(--aero-glass-blur));
   -webkit-backdrop-filter: blur(var(--aero-glass-blur));
+
+  @media (max-width: 767px) {
+    padding: 16px;
+  }
 }
 
 .input-wrapper {
@@ -113,6 +117,14 @@ watch(
   gap: 12px;
   max-width: 900px;
   margin: 0 auto;
+
+  @media (max-width: 767px) {
+    gap: 10px;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    max-width: 700px;
+  }
 }
 
 .input-field {
@@ -131,6 +143,12 @@ watch(
   outline: none;
   transition: all var(--aero-transition-base);
   box-shadow: var(--aero-shadow-ambient);
+
+  @media (max-width: 767px) {
+    min-height: 48px;
+    padding: 12px 14px;
+    font-size: 14px;
+  }
 
   &:focus {
     border-color: rgba(0, 212, 255, 0.6);
@@ -163,6 +181,11 @@ watch(
   box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
   flex-shrink: 0;
 
+  @media (max-width: 767px) {
+    width: 48px;
+    height: 48px;
+  }
+
   &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
@@ -183,6 +206,11 @@ watch(
 .send-icon {
   width: 22px;
   height: 22px;
+
+  @media (max-width: 767px) {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .stop-button {
@@ -200,6 +228,11 @@ watch(
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
   flex-shrink: 0;
 
+  @media (max-width: 767px) {
+    width: 48px;
+    height: 48px;
+  }
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
@@ -213,5 +246,10 @@ watch(
 .stop-icon {
   width: 18px;
   height: 18px;
+
+  @media (max-width: 767px) {
+    width: 16px;
+    height: 16px;
+  }
 }
 </style>

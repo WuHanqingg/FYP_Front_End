@@ -257,7 +257,7 @@ onMounted(() => {
   position: relative;
   min-height: calc(100vh - 100px);
   padding: 20px;
-  background: linear-gradient(180deg, var(--aero-bg-base) 0%, #f0f4f8 100%);
+  background: linear-gradient(180deg, var(--aero-bg-base) 0%, #e8e4e0 100%);
   font-family: var(--aero-font-body);
 
   .aero-noise-bg {
@@ -318,7 +318,7 @@ onMounted(() => {
 // Card Title
 .card-title-row {
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(0, 20, 40, 0.06);
+  border-bottom: 1px solid rgba(60, 60, 60, 0.05);
 
   .card-title {
     font-size: var(--aero-font-size-lg);
@@ -354,11 +354,11 @@ onMounted(() => {
       font-weight: var(--aero-font-weight-medium);
       
       &.normal {
-        color: #00c853;
+        color: #00a050;
       }
       
       &.alert {
-        color: #ff3c3c;
+        color: #d05050;
       }
     }
   }
@@ -403,14 +403,14 @@ onMounted(() => {
     }
 
     &:hover {
-      background: rgba(0, 212, 255, 0.05);
+      background: rgba(64, 158, 255, 0.08);
       color: var(--aero-text-primary);
     }
 
     &.active {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      background: linear-gradient(135deg, var(--el-color-primary) 0%, #337ecc 100%);
       color: white;
-      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 2px 8px rgba(64, 158, 255, 0.35);
     }
   }
 }
@@ -433,15 +433,15 @@ onMounted(() => {
     align-items: center;
     gap: 12px;
     padding: 10px 14px;
-    background: rgba(0, 20, 40, 0.04);
+    background: rgba(60, 60, 60, 0.04);
     border: 1px solid var(--aero-border-glass);
     border-radius: var(--aero-border-radius-md);
     transition: all var(--aero-transition-base);
 
     &:focus-within {
-      border-color: rgba(0, 212, 255, 0.5);
-      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
-      background: rgba(0, 20, 40, 0.02);
+      border-color: rgba(64, 158, 255, 0.4);
+      box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.08);
+      background: rgba(60, 60, 60, 0.02);
     }
   }
 
@@ -479,7 +479,7 @@ onMounted(() => {
   display: flex;
   gap: 10px;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(0, 20, 40, 0.06);
+  border-top: 1px solid rgba(60, 60, 60, 0.05);
 
   .cancel-btn,
   .confirm-btn {
@@ -495,25 +495,25 @@ onMounted(() => {
   }
 
   .cancel-btn {
-    background: rgba(0, 20, 40, 0.06);
+    background: rgba(60, 60, 60, 0.05);
     color: var(--aero-text-secondary);
     border: 1px solid var(--aero-border-glass);
 
     &:hover {
-      background: rgba(0, 20, 40, 0.1);
+      background: rgba(60, 60, 60, 0.08);
       color: var(--aero-text-primary);
-      border-color: rgba(0, 20, 40, 0.15);
+      border-color: rgba(60, 60, 60, 0.12);
     }
   }
 
   .confirm-btn {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(135deg, var(--el-color-primary) 0%, #337ecc 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.45);
+      box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
     }
 
     &:active {

@@ -1,44 +1,44 @@
 :root {
-  --aero-bg-base: #f8fafc;
-  --aero-bg-glass: rgba(255, 255, 255, 0.75);
-  --aero-bg-glass-strong: rgba(255, 255, 255, 0.9);
-  --aero-bg-glass-weak: rgba(255, 255, 255, 0.5);
-  --aero-text-primary: #1a2332;
-  --aero-text-secondary: #6b7b8c;
-  --aero-text-tertiary: #9aa5b1;
-  --aero-border-glass: rgba(255, 255, 255, 0.4);
-  --aero-border-glass-strong: rgba(255, 255, 255, 0.8);
+  --aero-bg-base: #e8e4e0;
+  --aero-bg-glass: rgba(245, 243, 240, 0.75);
+  --aero-bg-glass-strong: rgba(250, 248, 245, 0.9);
+  --aero-bg-glass-weak: rgba(240, 238, 235, 0.5);
+  --aero-text-primary: #3d3d3d;
+  --aero-text-secondary: #6b6b6b;
+  --aero-text-tertiary: #8a8a8a;
+  --aero-border-glass: rgba(220, 218, 215, 0.5);
+  --aero-border-glass-strong: rgba(200, 198, 195, 0.7);
   --aero-glass-blur: 20px;
   --aero-glass-blur-strong: 30px;
-  --aero-shadow-ambient: 0 8px 32px rgba(0, 20, 40, 0.08);
-  --aero-shadow-ambient-strong: 0 16px 48px rgba(0, 20, 40, 0.12);
-  --aero-shadow-glow-cyan: 0 0 24px rgba(0, 212, 255, 0.2);
-  --aero-shadow-glow-cyan-strong: 0 0 32px rgba(0, 212, 255, 0.3);
-  --aero-shadow-glow-mint: 0 0 24px rgba(0, 255, 170, 0.2);
-  --aero-shadow-glow-mint-strong: 0 0 32px rgba(0, 255, 170, 0.3);
-  --aero-shadow-glow-amber: 0 0 24px rgba(255, 170, 0, 0.2);
-  --aero-shadow-glow-amber-strong: 0 0 32px rgba(255, 170, 0, 0.3);
-  --aero-shadow-glow-crimson: 0 0 24px rgba(255, 60, 60, 0.2);
-  --aero-shadow-glow-crimson-strong: 0 0 32px rgba(255, 60, 60, 0.3);
-  --aero-shadow-glow-purple: 0 0 24px rgba(138, 43, 226, 0.2);
-  --aero-shadow-glow-purple-strong: 0 0 32px rgba(138, 43, 226, 0.3);
-  --aero-shadow-glow-green: 0 0 24px rgba(0, 200, 83, 0.2);
-  --aero-shadow-glow-green-strong: 0 0 32px rgba(0, 200, 83, 0.3);
-  --aero-shadow-glow-red: 0 0 24px rgba(220, 38, 38, 0.2);
-  --aero-shadow-glow-red-strong: 0 0 32px rgba(220, 38, 38, 0.3);
-  --aero-gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
-  --aero-gradient-glass-dark: linear-gradient(135deg, rgba(26, 35, 50, 0.9) 0%, rgba(26, 35, 50, 0.7) 100%);
-  --aero-gradient-cyan: linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%);
-  --aero-gradient-mint: linear-gradient(135deg, #00ffaa 0%, #00cc88 100%);
-  --aero-gradient-amber: linear-gradient(135deg, #ffaa00 0%, #ff8800 100%);
-  --aero-gradient-crimson: linear-gradient(135deg, #ff3c3c 0%, #cc3030 100%);
-  --aero-gradient-purple: linear-gradient(135deg, #8a2be2 0%, #6a1bb2 100%);
-  --aero-gradient-green: linear-gradient(135deg, #00c853 0%, #00a043 100%);
-  --aero-gradient-red: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  --aero-gradient-aurora: linear-gradient(180deg, rgba(0, 212, 255, 0.4) 0%, rgba(0, 212, 255, 0.1) 50%, transparent 100%);
-  --aero-gradient-aurora-mint: linear-gradient(180deg, rgba(0, 255, 170, 0.4) 0%, rgba(0, 255, 170, 0.1) 50%, transparent 100%);
-  --aero-gradient-aurora-amber: linear-gradient(180deg, rgba(255, 170, 0, 0.4) 0%, rgba(255, 170, 0, 0.1) 50%, transparent 100%);
-  --aero-gradient-aurora-crimson: linear-gradient(180deg, rgba(255, 60, 60, 0.4) 0%, rgba(255, 60, 60, 0.1) 50%, transparent 100%);
+  --aero-shadow-ambient: 0 8px 32px rgba(60, 60, 60, 0.06);
+  --aero-shadow-ambient-strong: 0 16px 48px rgba(60, 60, 60, 0.1);
+  --aero-shadow-glow-cyan: 0 0 24px rgba(0, 180, 200, 0.15);
+  --aero-shadow-glow-cyan-strong: 0 0 32px rgba(0, 180, 200, 0.25);
+  --aero-shadow-glow-mint: 0 0 24px rgba(0, 200, 150, 0.15);
+  --aero-shadow-glow-mint-strong: 0 0 32px rgba(0, 200, 150, 0.25);
+  --aero-shadow-glow-amber: 0 0 24px rgba(220, 150, 0, 0.15);
+  --aero-shadow-glow-amber-strong: 0 0 32px rgba(220, 150, 0, 0.25);
+  --aero-shadow-glow-crimson: 0 0 24px rgba(200, 80, 80, 0.15);
+  --aero-shadow-glow-crimson-strong: 0 0 32px rgba(200, 80, 80, 0.25);
+  --aero-shadow-glow-purple: 0 0 24px rgba(120, 80, 180, 0.15);
+  --aero-shadow-glow-purple-strong: 0 0 32px rgba(120, 80, 180, 0.25);
+  --aero-shadow-glow-green: 0 0 24px rgba(0, 170, 70, 0.15);
+  --aero-shadow-glow-green-strong: 0 0 32px rgba(0, 170, 70, 0.25);
+  --aero-shadow-glow-red: 0 0 24px rgba(190, 60, 60, 0.15);
+  --aero-shadow-glow-red-strong: 0 0 32px rgba(190, 60, 60, 0.25);
+  --aero-gradient-glass: linear-gradient(135deg, rgba(250, 248, 245, 0.9) 0%, rgba(235, 233, 230, 0.7) 100%);
+  --aero-gradient-glass-dark: linear-gradient(135deg, rgba(80, 78, 75, 0.9) 0%, rgba(60, 58, 55, 0.7) 100%);
+  --aero-gradient-cyan: linear-gradient(135deg, #00a8c0 0%, #0088a0 100%);
+  --aero-gradient-mint: linear-gradient(135deg, #00c090 0%, #00a070 100%);
+  --aero-gradient-amber: linear-gradient(135deg, #e09000 0%, #c07000 100%);
+  --aero-gradient-crimson: linear-gradient(135deg, #d05050 0%, #a04040 100%);
+  --aero-gradient-purple: linear-gradient(135deg, #7a50b0 0%, #5a3080 100%);
+  --aero-gradient-green: linear-gradient(135deg, #00a050 0%, #008040 100%);
+  --aero-gradient-red: linear-gradient(135deg, #b05050 0%, #904040 100%);
+  --aero-gradient-aurora: linear-gradient(180deg, rgba(0, 180, 200, 0.3) 0%, rgba(0, 180, 200, 0.08) 50%, transparent 100%);
+  --aero-gradient-aurora-mint: linear-gradient(180deg, rgba(0, 200, 150, 0.3) 0%, rgba(0, 200, 150, 0.08) 50%, transparent 100%);
+  --aero-gradient-aurora-amber: linear-gradient(180deg, rgba(220, 150, 0, 0.3) 0%, rgba(220, 150, 0, 0.08) 50%, transparent 100%);
+  --aero-gradient-aurora-crimson: linear-gradient(180deg, rgba(200, 80, 80, 0.3) 0%, rgba(200, 80, 80, 0.08) 50%, transparent 100%);
   --aero-border-radius-sm: 8px;
   --aero-border-radius-md: 12px;
   --aero-border-radius-lg: 16px;
@@ -90,6 +90,66 @@
   --aero-opacity-focus: 0.9;
 }
 
+@media (max-width: 767px) {
+  :root {
+    --aero-spacing-xs: 3px;
+    --aero-spacing-sm: 6px;
+    --aero-spacing-md: 12px;
+    --aero-spacing-lg: 18px;
+    --aero-spacing-xl: 24px;
+    --aero-spacing-2xl: 36px;
+    --aero-font-size-xs: 10px;
+    --aero-font-size-sm: 11px;
+    --aero-font-size-base: 13px;
+    --aero-font-size-lg: 14px;
+    --aero-font-size-xl: 16px;
+    --aero-font-size-2xl: 20px;
+    --aero-font-size-3xl: 28px;
+    --aero-font-size-4xl: 36px;
+    --aero-border-radius-sm: 6px;
+    --aero-border-radius-md: 10px;
+    --aero-border-radius-lg: 14px;
+    --aero-border-radius-xl: 20px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --aero-spacing-md: 14px;
+    --aero-spacing-lg: 20px;
+    --aero-spacing-xl: 28px;
+    --aero-spacing-2xl: 42px;
+    --aero-font-size-base: 14px;
+    --aero-font-size-lg: 15px;
+    --aero-font-size-xl: 17px;
+    --aero-font-size-2xl: 22px;
+    --aero-font-size-3xl: 30px;
+    --aero-font-size-4xl: 42px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  :root {
+    --aero-font-size-base: 15px;
+    --aero-font-size-lg: 16px;
+    --aero-font-size-xl: 18px;
+    --aero-font-size-2xl: 24px;
+    --aero-font-size-3xl: 32px;
+    --aero-font-size-4xl: 48px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --aero-font-size-base: 16px;
+    --aero-font-size-lg: 18px;
+    --aero-font-size-xl: 20px;
+    --aero-font-size-2xl: 26px;
+    --aero-font-size-3xl: 36px;
+    --aero-font-size-4xl: 54px;
+  }
+}
+
 .aero-glass {
   background: var(--aero-bg-glass);
   backdrop-filter: blur(var(--aero-glass-blur));
@@ -110,8 +170,8 @@
   background: var(--aero-bg-glass-weak);
   backdrop-filter: blur(calc(var(--aero-glass-blur) * 0.5));
   -webkit-backdrop-filter: blur(calc(var(--aero-glass-blur) * 0.5));
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 16px rgba(0, 20, 40, 0.06);
+  border: 1px solid rgba(200, 198, 195, 0.3);
+  box-shadow: 0 4px 16px rgba(60, 60, 60, 0.05);
 }
 
 .aero-card {
@@ -132,7 +192,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    background: linear-gradient(90deg, transparent, rgba(250, 248, 245, 0.6), transparent);
   }
 
   &::after {
@@ -142,7 +202,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0, 20, 40, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(60, 60, 60, 0.08), transparent);
   }
 
   &:hover {
@@ -287,11 +347,11 @@
 
   0%,
   100% {
-    box-shadow: 0 0 16px rgba(0, 212, 255, 0.2);
+    box-shadow: 0 0 16px rgba(0, 180, 200, 0.15);
   }
 
   50% {
-    box-shadow: 0 0 24px rgba(0, 212, 255, 0.4);
+    box-shadow: 0 0 24px rgba(0, 180, 200, 0.3);
   }
 }
 
@@ -323,7 +383,7 @@
   position: absolute;
   width: 8px;
   height: 8px;
-  border: 1px solid rgba(0, 212, 255, 0.3);
+  border: 1px solid rgba(0, 160, 180, 0.25);
   transition: all var(--aero-transition-base);
 
   &.top-left {
@@ -356,7 +416,7 @@
 }
 
 .aero-card:hover .aero-corner-mark {
-  border-color: rgba(0, 212, 255, 0.6);
+  border-color: rgba(0, 160, 180, 0.5);
 }
 
 .aero-tech-number {
@@ -378,7 +438,7 @@
 }
 
 .aero-progress-track {
-  background: rgba(0, 20, 40, 0.06);
+  background: rgba(60, 60, 60, 0.05);
   border-radius: var(--aero-border-radius-full);
   overflow: hidden;
   height: 4px;
@@ -389,22 +449,22 @@
   background: var(--aero-gradient-cyan);
   border-radius: var(--aero-border-radius-full);
   transition: width var(--aero-transition-slow);
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 180, 200, 0.25);
 }
 
 .aero-progress-bar-mint {
   background: var(--aero-gradient-mint);
-  box-shadow: 0 0 8px rgba(0, 255, 170, 0.3);
+  box-shadow: 0 0 8px rgba(0, 200, 150, 0.25);
 }
 
 .aero-progress-bar-amber {
   background: var(--aero-gradient-amber);
-  box-shadow: 0 0 8px rgba(255, 170, 0, 0.3);
+  box-shadow: 0 0 8px rgba(220, 150, 0, 0.25);
 }
 
 .aero-progress-bar-crimson {
   background: var(--aero-gradient-crimson);
-  box-shadow: 0 0 8px rgba(255, 60, 60, 0.3);
+  box-shadow: 0 0 8px rgba(200, 80, 80, 0.25);
 }
 
 .aero-status-dot {
@@ -417,40 +477,40 @@
 
 .aero-status-dot-normal {
   background: var(--aero-gradient-mint);
-  color: #00ffaa;
+  color: #00c090;
 }
 
 .aero-status-dot-warning {
   background: var(--aero-gradient-amber);
-  color: #ffaa00;
+  color: #e09000;
 }
 
 .aero-status-dot-danger {
   background: var(--aero-gradient-crimson);
-  color: #ff3c3c;
+  color: #d05050;
 }
 
 .aero-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 20, 40, 0.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(60, 60, 60, 0.06), transparent);
   margin: var(--aero-spacing-lg) 0;
 }
 
 .aero-divider-vertical {
   width: 1px;
-  background: linear-gradient(180deg, transparent, rgba(0, 20, 40, 0.08), transparent);
+  background: linear-gradient(180deg, transparent, rgba(60, 60, 60, 0.06), transparent);
   margin: 0 var(--aero-spacing-lg);
 }
 
 .aero-grid-bg {
   background-image:
-    linear-gradient(rgba(0, 20, 40, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 20, 40, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(60, 60, 60, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(60, 60, 60, 0.015) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
 .aero-dot-bg {
-  background-image: radial-gradient(rgba(0, 20, 40, 0.03) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(60, 60, 60, 0.02) 1px, transparent 1px);
   background-size: 8px 8px;
 }
 

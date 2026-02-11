@@ -1217,6 +1217,8 @@ onMounted(() => {
 
 // Aero Select Styling
 .aero-select {
+  min-width: 140px;
+
   :deep(.el-input__wrapper) {
     background: var(--aero-bg-glass-weak);
     border: 1px solid var(--aero-border-glass);
@@ -1225,12 +1227,12 @@ onMounted(() => {
     transition: all var(--aero-transition-base);
 
     &:hover {
-      border-color: rgba(0, 212, 255, 0.3);
+      border-color: rgba(0, 160, 180, 0.3);
     }
 
     &.is-focus {
-      border-color: rgba(0, 212, 255, 0.6);
-      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+      border-color: rgba(0, 160, 180, 0.5);
+      box-shadow: 0 0 0 3px rgba(0, 160, 180, 0.08);
     }
   }
 

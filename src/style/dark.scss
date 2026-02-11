@@ -32,6 +32,7 @@ html.dark {
 
   /* 标签页 */
   .tags-view {
+
     .arrow-left,
     .arrow-right {
       border-right: 1px solid $border-style;
@@ -96,6 +97,7 @@ html.dark {
 
   /* 全局覆盖element-plus的el-dialog、el-drawer、el-message-box、el-notification组件右上角关闭图标的样式，表现更鲜明 */
   .el-icon {
+
     &.el-dialog__close,
     &.el-drawer__close,
     &.el-message-box__close,

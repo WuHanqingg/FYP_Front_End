@@ -175,6 +175,11 @@ const progressBarClass = computed(() => {
   cursor: pointer;
   transition: all var(--aero-transition-base);
 
+  @media (max-width: 767px) {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
   &:hover {
     transform: translateY(-2px);
   }
@@ -200,6 +205,11 @@ const progressBarClass = computed(() => {
     align-items: center;
     gap: 16px;
     margin-bottom: 20px;
+
+    @media (max-width: 767px) {
+      gap: 12px;
+      margin-bottom: 16px;
+    }
   }
 
   &__icon-wrapper {
@@ -214,6 +224,11 @@ const progressBarClass = computed(() => {
     border: 1px solid var(--aero-border-glass);
     transition: all var(--aero-transition-base);
 
+    @media (max-width: 767px) {
+      width: 36px;
+      height: 36px;
+    }
+
     .env-card--warning & {
       color: #ffaa00;
     }
@@ -227,6 +242,10 @@ const progressBarClass = computed(() => {
     flex: 1;
     font-size: var(--aero-font-size-sm);
     color: var(--aero-text-secondary);
+
+    @media (max-width: 767px) {
+      font-size: 11px;
+    }
   }
 
   &__status-badge {
@@ -241,6 +260,12 @@ const progressBarClass = computed(() => {
     border-radius: var(--aero-border-radius-full);
     border: 1px solid var(--aero-border-glass);
     transition: all var(--aero-transition-base);
+
+    @media (max-width: 767px) {
+      padding: 4px 8px;
+      font-size: 10px;
+      gap: 4px;
+    }
 
     .env-card--warning & {
       color: #ffaa00;
@@ -259,16 +284,29 @@ const progressBarClass = computed(() => {
     border-radius: 50%;
     background: var(--card-accent);
     box-shadow: 0 0 8px currentColor;
+
+    @media (max-width: 767px) {
+      width: 5px;
+      height: 5px;
+    }
   }
 
   &__status-text {
     font-weight: var(--aero-font-weight-semibold);
+
+    @media (max-width: 767px) {
+      display: none;
+    }
   }
 
   &__content {
     display: flex;
     flex-direction: column;
     gap: 16px;
+
+    @media (max-width: 767px) {
+      gap: 12px;
+    }
   }
 
   &__value {
@@ -282,11 +320,23 @@ const progressBarClass = computed(() => {
       line-height: var(--aero-line-height-tight);
       color: var(--aero-text-primary);
       letter-spacing: -0.02em;
+
+      @media (max-width: 767px) {
+        font-size: 32px;
+      }
+
+      @media (min-width: 768px) and (max-width: 1023px) {
+        font-size: 36px;
+      }
     }
 
     .value-unit {
       font-size: var(--aero-font-size-sm);
       color: var(--aero-text-tertiary);
+
+      @media (max-width: 767px) {
+        font-size: 11px;
+      }
     }
   }
 
@@ -295,6 +345,10 @@ const progressBarClass = computed(() => {
     height: 4px;
     overflow: hidden;
     border-radius: var(--aero-border-radius-full);
+
+    @media (max-width: 767px) {
+      height: 3px;
+    }
   }
 
   &__progress-track {
@@ -324,12 +378,21 @@ const progressBarClass = computed(() => {
     gap: 8px;
     padding-top: 12px;
     border-top: 1px solid rgba(0, 20, 40, 0.04);
+
+    @media (max-width: 767px) {
+      gap: 6px;
+      padding-top: 10px;
+    }
   }
 
   &__threshold-info {
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+    @media (max-width: 767px) {
+      gap: 6px;
+    }
   }
 
   &__threshold {
@@ -341,6 +404,10 @@ const progressBarClass = computed(() => {
     border-radius: var(--aero-border-radius-sm);
     border: 1px solid rgba(0, 20, 40, 0.04);
     transition: all var(--aero-transition-base);
+
+    @media (max-width: 767px) {
+      padding: 6px 10px;
+    }
 
     &:hover {
       background: rgba(0, 20, 40, 0.04);
@@ -356,6 +423,10 @@ const progressBarClass = computed(() => {
     border-radius: var(--aero-border-radius-sm);
     border: 1px solid rgba(0, 20, 40, 0.04);
     transition: all var(--aero-transition-base);
+
+    @media (max-width: 767px) {
+      padding: 6px 10px;
+    }
 
     &:hover {
       background: rgba(0, 20, 40, 0.04);

@@ -1,0 +1,702 @@
+:root {
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  --container-max-width-xs: 100%;
+  --container-max-width-sm: 100%;
+  --container-max-width-md: 720px;
+  --container-max-width-lg: 960px;
+  --container-max-width-xl: 1140px;
+  --container-max-width-2xl: 1320px;
+
+  --touch-target-min: 44px;
+  --mobile-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == xs {
+    @media (min-width: var(--breakpoint-xs)) {
+      @content;
+    }
+  } @else if $breakpoint == sm {
+    @media (min-width: var(--breakpoint-sm)) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (min-width: var(--breakpoint-md)) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (min-width: var(--breakpoint-lg)) {
+      @content;
+    }
+  } @else if $breakpoint == xl {
+    @media (min-width: var(--breakpoint-xl)) {
+      @content;
+    }
+  } @else if $breakpoint == 2xl {
+    @media (min-width: var(--breakpoint-2xl)) {
+      @content;
+    }
+  }
+}
+
+@mixin respond-below($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: calc(var(--breakpoint-xs) - 1px)) {
+      @content;
+    }
+  } @else if $breakpoint == sm {
+    @media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (max-width: calc(var(--breakpoint-md) - 1px)) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+      @content;
+    }
+  } @else if $breakpoint == xl {
+    @media (max-width: calc(var(--breakpoint-xl) - 1px)) {
+      @content;
+    }
+  } @else if $breakpoint == 2xl {
+    @media (max-width: calc(var(--breakpoint-2xl) - 1px)) {
+      @content;
+    }
+  }
+}
+
+@mixin respond-between($min, $max) {
+  @media (min-width: var(--breakpoint-#{$min})) and (max-width: calc(var(--breakpoint-#{$max}) - 1px)) {
+    @content;
+  }
+}
+
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: var(--aero-spacing-md);
+  padding-left: var(--aero-spacing-md);
+
+  @include respond-to(xs) {
+    max-width: var(--container-max-width-xs);
+  }
+
+  @include respond-to(sm) {
+    max-width: var(--container-max-width-sm);
+  }
+
+  @include respond-to(md) {
+    max-width: var(--container-max-width-md);
+  }
+
+  @include respond-to(lg) {
+    max-width: var(--container-max-width-lg);
+  }
+
+  @include respond-to(xl) {
+    max-width: var(--container-max-width-xl);
+  }
+
+  @include respond-to(2xl) {
+    max-width: var(--container-max-width-2xl);
+  }
+
+  &--fluid {
+    max-width: 100%;
+  }
+
+  &--narrow {
+    @include respond-to(md) {
+      max-width: 640px;
+    }
+  }
+
+  &--wide {
+    @include respond-to(lg) {
+      max-width: 1200px;
+    }
+  }
+}
+
+.responsive-grid {
+  display: grid;
+  gap: var(--aero-spacing-md);
+
+  @include respond-to(xs) {
+    grid-template-columns: 1fr;
+  }
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--aero-spacing-lg);
+  }
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include respond-to(xl) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  &--2 {
+    @include respond-to(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &--3 {
+    @include respond-to(md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &--4 {
+    @include respond-to(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to(lg) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &--auto {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  }
+}
+
+.responsive-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--aero-spacing-md);
+
+  &--center {
+    justify-content: center;
+  }
+
+  &--between {
+    justify-content: space-between;
+  }
+
+  &--around {
+    justify-content: space-around;
+  }
+
+  @include respond-to(xs) {
+    flex-direction: column;
+
+    &--row-mobile {
+      flex-direction: row;
+    }
+  }
+
+  @include respond-to(sm) {
+    flex-direction: row;
+
+    &--column-tablet {
+      flex-direction: column;
+    }
+  }
+}
+
+.responsive-text {
+  &--h1 {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    line-height: var(--aero-line-height-tight);
+  }
+
+  &--h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    line-height: var(--aero-line-height-tight);
+  }
+
+  &--h3 {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    line-height: var(--aero-line-height-tight);
+  }
+
+  &--h4 {
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+    line-height: var(--aero-line-height-normal);
+  }
+
+  &--body {
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    line-height: var(--aero-line-height-relaxed);
+  }
+
+  &--small {
+    font-size: clamp(0.75rem, 1.25vw, 0.875rem);
+    line-height: var(--aero-line-height-normal);
+  }
+
+  &--caption {
+    font-size: clamp(0.625rem, 1vw, 0.75rem);
+    line-height: var(--aero-line-height-normal);
+  }
+}
+
+.responsive-spacing {
+  &--xs {
+    padding: var(--aero-spacing-xs);
+
+    @include respond-to(md) {
+      padding: var(--aero-spacing-sm);
+    }
+  }
+
+  &--sm {
+    padding: var(--aero-spacing-sm);
+
+    @include respond-to(md) {
+      padding: var(--aero-spacing-md);
+    }
+  }
+
+  &--md {
+    padding: var(--aero-spacing-md);
+
+    @include respond-to(md) {
+      padding: var(--aero-spacing-lg);
+    }
+  }
+
+  &--lg {
+    padding: var(--aero-spacing-lg);
+
+    @include respond-to(md) {
+      padding: var(--aero-spacing-xl);
+    }
+  }
+
+  &--xl {
+    padding: var(--aero-spacing-xl);
+
+    @include respond-to(md) {
+      padding: var(--aero-spacing-2xl);
+    }
+  }
+}
+
+.responsive-margin {
+  &--xs {
+    margin: var(--aero-spacing-xs);
+
+    @include respond-to(md) {
+      margin: var(--aero-spacing-sm);
+    }
+  }
+
+  &--sm {
+    margin: var(--aero-spacing-sm);
+
+    @include respond-to(md) {
+      margin: var(--aero-spacing-md);
+    }
+  }
+
+  &--md {
+    margin: var(--aero-spacing-md);
+
+    @include respond-to(md) {
+      margin: var(--aero-spacing-lg);
+    }
+  }
+
+  &--lg {
+    margin: var(--aero-spacing-lg);
+
+    @include respond-to(md) {
+      margin: var(--aero-spacing-xl);
+    }
+  }
+}
+
+.responsive-button {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+
+  @include respond-to(md) {
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+  }
+
+  &--small {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+
+    @include respond-to(md) {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  &--large {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+
+    @include respond-to(md) {
+      padding: 1.125rem 2.25rem;
+      font-size: 1.125rem;
+    }
+  }
+}
+
+.responsive-input {
+  min-height: var(--touch-target-min);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+
+  @include respond-to(md) {
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+  }
+}
+
+.responsive-card {
+  padding: var(--aero-spacing-md);
+
+  @include respond-to(md) {
+    padding: var(--aero-spacing-lg);
+  }
+
+  @include respond-to(lg) {
+    padding: var(--aero-spacing-xl);
+  }
+}
+
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+
+  &--cover {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  &--contain {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.responsive-video {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+
+  iframe,
+  video,
+  object {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.hide-mobile {
+  @include respond-below(md) {
+    display: none !important;
+  }
+}
+
+.hide-tablet {
+  @include respond-between(md, lg) {
+    display: none !important;
+  }
+}
+
+.hide-desktop {
+  @include respond-to(lg) {
+    display: none !important;
+  }
+}
+
+.show-mobile {
+  display: none;
+
+  @include respond-below(md) {
+    display: block !important;
+  }
+}
+
+.show-tablet {
+  display: none;
+
+  @include respond-between(md, lg) {
+    display: block !important;
+  }
+}
+
+.show-desktop {
+  display: none;
+
+  @include respond-to(lg) {
+    display: block !important;
+  }
+}
+
+.responsive-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  z-index: var(--aero-z-index-fixed);
+  transform: translateX(-100%);
+  transition: transform var(--aero-transition-base);
+
+  &.open {
+    transform: translateX(0);
+  }
+
+  @include respond-to(lg) {
+    position: relative;
+    transform: none;
+  }
+}
+
+.responsive-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--aero-z-index-fixed) - 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--aero-transition-base);
+
+  &.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @include respond-to(lg) {
+    display: none;
+  }
+}
+
+.responsive-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: var(--aero-z-index-modal);
+
+  @include respond-to(md) {
+    max-width: 600px;
+  }
+
+  @include respond-to(lg) {
+    max-width: 800px;
+  }
+
+  &--large {
+    @include respond-to(md) {
+      max-width: 800px;
+    }
+
+    @include respond-to(lg) {
+      max-width: 1000px;
+    }
+  }
+
+  &--full {
+    @include respond-to(md) {
+      max-width: 90vw;
+    }
+
+    @include respond-to(lg) {
+      max-width: 95vw;
+    }
+  }
+}
+
+.responsive-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  table {
+    min-width: 600px;
+
+    @include respond-to(md) {
+      min-width: 100%;
+    }
+  }
+}
+
+.responsive-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+
+  @include respond-to(md) {
+    justify-content: flex-end;
+  }
+}
+
+.responsive-form {
+  &--inline {
+    @include respond-below(md) {
+      flex-direction: column;
+
+      .el-form-item {
+        margin-right: 0;
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}
+
+.responsive-navbar {
+  padding: 0.75rem 1rem;
+
+  @include respond-to(md) {
+    padding: 1rem 1.5rem;
+  }
+
+  @include respond-to(lg) {
+    padding: 1.25rem 2rem;
+  }
+}
+
+.responsive-hero {
+  padding: 2rem 1rem;
+  text-align: center;
+
+  @include respond-to(md) {
+    padding: 3rem 2rem;
+    text-align: left;
+  }
+
+  @include respond-to(lg) {
+    padding: 4rem 2rem;
+  }
+}
+
+.responsive-stats {
+  display: grid;
+  gap: 1rem;
+
+  @include respond-to(xs) {
+    grid-template-columns: 1fr;
+  }
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .hover-effect {
+    &:hover,
+    &:focus {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+@media (orientation: portrait) {
+  .orientation-portrait {
+    display: block;
+  }
+
+  .orientation-landscape {
+    display: none;
+  }
+}
+
+@media (orientation: landscape) {
+  .orientation-portrait {
+    display: none;
+  }
+
+  .orientation-landscape {
+    display: block;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  .responsive-card,
+  .aero-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+}
+
+.high-contrast-mode {
+  @media (prefers-contrast: high) {
+    --aero-text-primary: #000;
+    --aero-text-secondary: #333;
+    --aero-border-glass: #000;
+    --aero-bg-glass: #fff;
+  }
+}

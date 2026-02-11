@@ -13,6 +13,15 @@
         </svg>
         New Conversation
       </button>
+      <button
+        class="close-sidebar-btn"
+        title="Close sidebar"
+        @click="$emit('close')"
+      >
+        <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
 
     <div class="conversation-list">
@@ -199,7 +208,8 @@ const emit = defineEmits<{
   create: [];
   delete: [id: string];
   rename: [id: string, title: string];
-}>();
+  close: [];
+}>()
 
 // Rename functionality
 const renamingId = ref<string | null>(null);
@@ -274,11 +284,115 @@ function executeDelete() {
   height: 100%;
   backdrop-filter: blur(var(--aero-glass-blur));
   -webkit-backdrop-filter: blur(var(--aero-glass-blur));
+
+  @media (max-width: 1023px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+    box-shadow: none;
+
+    &.sidebar-open {
+      transform: translateX(0);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    width: 240px;
+  }
 }
 
 .sidebar-header {
   padding: 20px;
   border-bottom: 1px solid rgba(0, 20, 40, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @media (max-width: 767px) {
+    padding: 16px;
+  }
+
+  .sidebar.sidebar-open & {
+    animation: slideDown 0.3s ease 0.1s both;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close-sidebar-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--aero-bg-glass-weak);
+  border: 1px solid var(--aero-border-glass);
+  border-radius: var(--aero-border-radius-md);
+  color: var(--aero-text-secondary);
+  cursor: pointer;
+  transition: all var(--aero-transition-base);
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0.8);
+
+  @media (max-width: 1023px) {
+    display: flex;
+  }
+
+  @media (max-width: 767px) {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sidebar.sidebar-open & {
+    animation: rotateIn 0.3s ease 0.2s both;
+  }
+
+  &:hover {
+    background: var(--aero-bg-glass);
+    border-color: rgba(0, 212, 255, 0.3);
+    color: var(--aero-text-primary);
+    transform: rotate(90deg) scale(1);
+  }
+
+  &:active {
+    transform: rotate(90deg) scale(0.95);
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+.close-icon {
+  width: 20px;
+  height: 20px;
+
+  @media (max-width: 767px) {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .new-conversation-btn {
@@ -299,6 +413,12 @@ function executeDelete() {
   letter-spacing: var(--aero-letter-spacing-wide);
   text-transform: uppercase;
 
+  @media (max-width: 767px) {
+    padding: 12px 14px;
+    font-size: 12px;
+    gap: 8px;
+  }
+
   &:hover {
     background: var(--aero-bg-glass);
     border-color: rgba(0, 212, 255, 0.3);
@@ -315,12 +435,36 @@ function executeDelete() {
   width: 20px;
   height: 20px;
   color: var(--aero-text-secondary);
+
+  @media (max-width: 767px) {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .conversation-list {
   flex: 1;
   overflow-y: auto;
   padding: 12px;
+
+  @media (max-width: 767px) {
+    padding: 8px;
+  }
+
+  .sidebar.sidebar-open & {
+    animation: slideUp 0.3s ease 0.15s both;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .conversation-item {
@@ -330,6 +474,10 @@ function executeDelete() {
   transition: all var(--aero-transition-base);
   width: 100%;
   box-sizing: border-box;
+
+  @media (max-width: 767px) {
+    margin-bottom: 4px;
+  }
 }
 
 .conversation-item.renaming {
@@ -352,6 +500,12 @@ function executeDelete() {
   transition: all var(--aero-transition-base);
   text-align: left;
 
+  @media (max-width: 767px) {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 10px;
+  }
+
   &:hover {
     background: var(--aero-bg-glass-weak);
     color: var(--aero-text-primary);
@@ -370,6 +524,11 @@ function executeDelete() {
   height: 18px;
   color: var(--aero-text-tertiary);
   flex-shrink: 0;
+
+  @media (max-width: 767px) {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .conversation-item.active .conversation-icon {
@@ -382,6 +541,10 @@ function executeDelete() {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: var(--aero-font-weight-regular);
+
+  @media (max-width: 767px) {
+    font-size: 13px;
+  }
 }
 
 .rename-container {
@@ -395,6 +558,11 @@ function executeDelete() {
   animation: renameSlideIn 0.3s ease;
   width: 100%;
   box-sizing: border-box;
+
+  @media (max-width: 767px) {
+    padding: 6px 8px;
+    gap: 4px;
+  }
 }
 
 @keyframes renameSlideIn {
@@ -418,6 +586,11 @@ function executeDelete() {
   font-family: var(--aero-font-body);
   font-size: var(--aero-font-size-sm);
   outline: none;
+
+  @media (max-width: 767px) {
+    font-size: 13px;
+    padding: 4px 6px;
+  }
 }
 
 .rename-actions {
@@ -438,6 +611,11 @@ function executeDelete() {
   cursor: pointer;
   transition: all var(--aero-transition-base);
   flex-shrink: 0;
+
+  @media (max-width: 767px) {
+    width: 24px;
+    height: 24px;
+  }
 
   &:hover {
     background: var(--aero-bg-glass-weak);
@@ -467,6 +645,12 @@ function executeDelete() {
   margin-left: 8px;
   opacity: 0;
   transition: opacity var(--aero-transition-base);
+
+  @media (max-width: 767px) {
+    opacity: 1;
+    margin-left: 0;
+    margin-top: 0;
+  }
 }
 
 .conversation-item:hover .action-buttons {
@@ -485,6 +669,11 @@ function executeDelete() {
   cursor: pointer;
   transition: all var(--aero-transition-base);
 
+  @media (max-width: 767px) {
+    width: 24px;
+    height: 24px;
+  }
+
   &:hover {
     background: var(--aero-bg-glass-weak);
   }
@@ -494,6 +683,11 @@ function executeDelete() {
   width: 16px;
   height: 16px;
   color: var(--aero-text-tertiary);
+
+  @media (max-width: 767px) {
+    width: 14px;
+    height: 14px;
+  }
 }
 
 .rename-btn:hover .action-icon {
@@ -510,6 +704,11 @@ function executeDelete() {
   color: var(--aero-text-tertiary);
   font-family: var(--aero-font-body);
   font-size: var(--aero-font-size-sm);
+
+  @media (max-width: 767px) {
+    padding: 24px 16px;
+    font-size: 12px;
+  }
 }
 
 .conversation-item.is-deleting {
@@ -578,6 +777,11 @@ function executeDelete() {
   animation: modalSlideIn 0.3s ease;
   backdrop-filter: blur(var(--aero-glass-blur-strong));
   -webkit-backdrop-filter: blur(var(--aero-glass-blur-strong));
+
+  @media (max-width: 767px) {
+    max-width: 90%;
+    margin: 12px;
+  }
 }
 
 @keyframes modalSlideIn {
@@ -597,6 +801,10 @@ function executeDelete() {
   align-items: center;
   padding: 24px 24px 16px;
   gap: 12px;
+
+  @media (max-width: 767px) {
+    padding: 20px 16px 12px;
+  }
 }
 
 .modal-icon {
@@ -608,11 +816,21 @@ function executeDelete() {
   background: rgba(220, 38, 38, 0.1);
   border-radius: 50%;
   color: #dc2626;
+
+  @media (max-width: 767px) {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .modal-icon svg {
   width: 24px;
   height: 24px;
+
+  @media (max-width: 767px) {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .modal-title {
@@ -621,11 +839,19 @@ function executeDelete() {
   font-weight: var(--aero-font-weight-semibold);
   color: var(--aero-text-primary);
   margin: 0;
+
+  @media (max-width: 767px) {
+    font-size: 18px;
+  }
 }
 
 .modal-body {
   padding: 0 24px 24px;
   text-align: center;
+
+  @media (max-width: 767px) {
+    padding: 0 16px 20px;
+  }
 }
 
 .modal-message {
@@ -634,6 +860,10 @@ function executeDelete() {
   color: var(--aero-text-secondary);
   margin: 0 0 8px;
   line-height: var(--aero-line-height-normal);
+
+  @media (max-width: 767px) {
+    font-size: 13px;
+  }
 }
 
 .modal-message strong {
@@ -646,12 +876,21 @@ function executeDelete() {
   font-size: var(--aero-font-size-xs);
   color: var(--aero-text-tertiary);
   margin: 0;
+
+  @media (max-width: 767px) {
+    font-size: 11px;
+  }
 }
 
 .modal-footer {
   display: flex;
   gap: 12px;
   padding: 0 24px 24px;
+
+  @media (max-width: 767px) {
+    padding: 0 16px 20px;
+    gap: 8px;
+  }
 }
 
 .modal-btn {
@@ -664,6 +903,11 @@ function executeDelete() {
   cursor: pointer;
   transition: all var(--aero-transition-base);
   border: none;
+
+  @media (max-width: 767px) {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
 }
 
 .modal-btn.cancel {

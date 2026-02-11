@@ -63,42 +63,42 @@ export function useTags() {
   const tagsViews = reactive<Array<tagsViewsType>>([
     {
       icon: RefreshRight,
-      text: "重新加载",
+      text: "Reload",
       divided: false,
       disabled: false,
       show: true
     },
     {
       icon: Close,
-      text: "关闭当前标签页",
+      text: "Close Current Tab",
       divided: false,
       disabled: multiTags.value.length > 1 ? false : true,
       show: true
     },
     {
       icon: CloseLeftTags,
-      text: "关闭左侧标签页",
+      text: "Close Left Tabs",
       divided: true,
       disabled: multiTags.value.length > 1 ? false : true,
       show: true
     },
     {
       icon: CloseRightTags,
-      text: "关闭右侧标签页",
+      text: "Close Right Tabs",
       divided: false,
       disabled: multiTags.value.length > 1 ? false : true,
       show: true
     },
     {
       icon: CloseOtherTags,
-      text: "关闭其他标签页",
+      text: "Close Other Tabs",
       divided: true,
       disabled: multiTags.value.length > 2 ? false : true,
       show: true
     },
     {
       icon: CloseAllTags,
-      text: "关闭全部标签页",
+      text: "Close All Tabs",
       divided: false,
       disabled: multiTags.value.length > 1 ? false : true,
       show: true
