@@ -234,6 +234,10 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
+  function resetToNewConversation() {
+    currentConversationId.value = null;
+  }
+
   return {
     conversations,
     currentConversationId,
@@ -253,6 +257,7 @@ export const useChatStore = defineStore("chat", () => {
     setAbortController,
     abortCurrentRequest,
     clearAllConversations,
-    switchConversation
+    switchConversation,
+    resetToNewConversation
   };
 });

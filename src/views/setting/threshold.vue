@@ -123,17 +123,17 @@ const updateThreshold = async (id: string) => {
 const getReadingStatus = (item: EnvironmentDataType) => {
   const value = Number(item.value) || 0;
   const threshold = Number(item.threshold) || 0;
-  
+
   if (item.thresholdType === "off" || threshold === 0) {
     return "Normal";
   }
-  
+
   if (item.thresholdType === "above") {
     return value > threshold ? "Alert" : "Normal";
   } else if (item.thresholdType === "below") {
     return value < threshold ? "Alert" : "Normal";
   }
-  
+
   return "Normal";
 };
 
@@ -146,15 +146,17 @@ onMounted(() => {
 <template>
   <div class="threshold-container aero-dot-bg">
     <div class="aero-noise-bg" />
-    
+
     <div class="threshold-content">
       <div class="threshold-header aero-card">
         <div class="aero-corner-mark top-left" />
         <div class="aero-corner-mark top-right" />
         <div class="aero-corner-mark bottom-left" />
         <div class="aero-corner-mark bottom-right" />
-        
-        <h2 class="threshold-title aero-display aero-uppercase">THRESHOLD SETTING</h2>
+
+        <h2 class="threshold-title aero-display aero-uppercase">
+          THRESHOLD SETTING
+        </h2>
         <p class="threshold-description aero-body">
           Set thresholds for environmental indicators. System will alert when
           values exceed thresholds.
@@ -176,26 +178,35 @@ onMounted(() => {
             <div class="aero-corner-mark top-right" />
             <div class="aero-corner-mark bottom-left" />
             <div class="aero-corner-mark bottom-right" />
-            
+
             <!-- Card Title -->
             <div class="card-title-row">
-              <h3 class="card-title aero-display">{{ item.name }} Alert Settings</h3>
+              <h3 class="card-title aero-display">
+                {{ item.name }} Alert Settings
+              </h3>
             </div>
-            
+
             <!-- Row 1: Current Reading -->
             <div class="reading-row">
               <div class="reading-badge aero-glass-weak">
                 <span class="reading-label">Current Reading:</span>
-                <span class="reading-value aero-mono">{{ item.value || 0 }} {{ item.unit }}</span>
-                <span class="reading-status" :class="getReadingStatus(item).toLowerCase()">
+                <span class="reading-value aero-mono"
+                  >{{ item.value || 0 }} {{ item.unit }}</span
+                >
+                <span
+                  class="reading-status"
+                  :class="getReadingStatus(item).toLowerCase()"
+                >
                   ({{ getReadingStatus(item) }})
                 </span>
               </div>
             </div>
-            
+
             <!-- Row 2: Trigger Condition -->
             <div class="trigger-row">
-              <label class="trigger-label aero-tech-label">Trigger Condition</label>
+              <label class="trigger-label aero-tech-label"
+                >Trigger Condition</label
+              >
               <div class="trigger-options">
                 <button
                   class="trigger-btn"
@@ -220,7 +231,7 @@ onMounted(() => {
                 </button>
               </div>
             </div>
-            
+
             <!-- Row 3: Threshold Value -->
             <div class="value-row">
               <label class="value-label aero-tech-label">Threshold Value</label>
@@ -235,7 +246,7 @@ onMounted(() => {
                 <span class="value-unit aero-tech-label">{{ item.unit }}</span>
               </div>
             </div>
-            
+
             <!-- Row 4: Action Buttons -->
             <div class="action-row">
               <button class="cancel-btn" @click="cancelUpdate(item)">
@@ -352,11 +363,11 @@ onMounted(() => {
 
     .reading-status {
       font-weight: var(--aero-font-weight-medium);
-      
+
       &.normal {
         color: #00a050;
       }
-      
+
       &.alert {
         color: #d05050;
       }
@@ -408,7 +419,11 @@ onMounted(() => {
     }
 
     &.active {
-      background: linear-gradient(135deg, var(--el-color-primary) 0%, #337ecc 100%);
+      background: linear-gradient(
+        135deg,
+        var(--el-color-primary) 0%,
+        #337ecc 100%
+      );
       color: white;
       box-shadow: 0 2px 8px rgba(64, 158, 255, 0.35);
     }
@@ -507,7 +522,11 @@ onMounted(() => {
   }
 
   .confirm-btn {
-    background: linear-gradient(135deg, var(--el-color-primary) 0%, #337ecc 100%);
+    background: linear-gradient(
+      135deg,
+      var(--el-color-primary) 0%,
+      #337ecc 100%
+    );
     color: white;
     box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
 

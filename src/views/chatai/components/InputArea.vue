@@ -152,7 +152,9 @@ watch(
 
   &:focus {
     border-color: rgba(0, 212, 255, 0.6);
-    box-shadow: var(--aero-shadow-ambient), 0 0 0 3px rgba(0, 212, 255, 0.1);
+    box-shadow:
+      var(--aero-shadow-ambient),
+      0 0 0 3px rgba(0, 212, 255, 0.1);
   }
 
   &::placeholder {

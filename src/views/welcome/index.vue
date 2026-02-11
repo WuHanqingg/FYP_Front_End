@@ -63,7 +63,7 @@ const moduleCardClass = (color: string) => {
 <template>
   <div class="welcome-container aero-dot-bg">
     <div class="aero-noise-bg" />
-    
+
     <section class="hero-section" :class="{ 'is-loaded': isLoaded }">
       <div class="hero-content">
         <div class="logo-badge aero-glass-weak">
@@ -136,15 +136,10 @@ const moduleCardClass = (color: string) => {
           <div class="aero-corner-mark top-right" />
           <div class="aero-corner-mark bottom-left" />
           <div class="aero-corner-mark bottom-right" />
-          
+
           <div class="card-header">
-            <div
-              class="module-icon-wrapper"
-            >
-              <Icon
-                :icon="module.icon"
-                class="module-icon"
-              />
+            <div class="module-icon-wrapper">
+              <Icon :icon="module.icon" class="module-icon" />
             </div>
             <Icon icon="carbon:arrow-right" class="arrow-icon" />
           </div>

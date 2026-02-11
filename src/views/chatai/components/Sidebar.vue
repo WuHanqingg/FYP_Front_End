@@ -18,8 +18,18 @@
         title="Close sidebar"
         @click="$emit('close')"
       >
-        <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg
+          class="close-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path
+            d="M18 6L6 18M6 6l12 12"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </button>
     </div>
@@ -120,7 +130,15 @@
             </button>
             <button
               class="action-btn delete-btn"
-              title="Delete"
+              :class="{
+                disabled: isStreaming && currentId === conversation.id
+              }"
+              :disabled="isStreaming && currentId === conversation.id"
+              :title="
+                isStreaming && currentId === conversation.id
+                  ? 'Cannot delete during streaming'
+                  : 'Delete'
+              "
               @click.stop="openDeleteModal(conversation)"
             >
               <svg class="action-icon" viewBox="0 0 24 24" fill="none">
@@ -201,6 +219,7 @@ import type { Conversation } from "@/store/modules/chat";
 const props = defineProps<{
   conversations: Conversation[];
   currentId: string | null;
+  isStreaming?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -209,7 +228,7 @@ const emit = defineEmits<{
   delete: [id: string];
   rename: [id: string, title: string];
   close: [];
-}>()
+}>();
 
 // Rename functionality
 const renamingId = ref<string | null>(null);
@@ -249,6 +268,9 @@ function cancelRename() {
 
 // Custom delete modal functions
 function openDeleteModal(conversation: Conversation) {
+  if (props.isStreaming && props.currentId === conversation.id) {
+    return;
+  }
   conversationToDelete.value = conversation;
   showDeleteModal.value = true;
 }
@@ -292,7 +314,9 @@ function executeDelete() {
     bottom: 0;
     z-index: 1000;
     transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease;
     box-shadow: none;
 
     &.sidebar-open {
@@ -696,6 +720,12 @@ function executeDelete() {
 
 .delete-btn:hover .action-icon {
   color: #ff3c3c;
+}
+
+.delete-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .empty-state {

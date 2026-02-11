@@ -111,7 +111,11 @@ const progressBarClass = computed(() => {
 </script>
 
 <template>
-  <div class="env-card aero-card" :class="[computeStatus(), statusColorClass]" @click="handleClick">
+  <div
+    class="env-card aero-card"
+    :class="[computeStatus(), statusColorClass]"
+    @click="handleClick"
+  >
     <div class="aero-corner-mark top-left" />
     <div class="aero-corner-mark top-right" />
     <div class="aero-corner-mark bottom-left" />
@@ -121,7 +125,9 @@ const progressBarClass = computed(() => {
       <div class="env-card__icon-wrapper">
         <IconifyIconOnline :icon="data.icon" width="24" height="24" />
       </div>
-      <div class="env-card__type aero-uppercase aero-tech-label">{{ data.name }}</div>
+      <div class="env-card__type aero-uppercase aero-tech-label">
+        {{ data.name }}
+      </div>
       <div class="env-card__status-badge" :class="computeStatus()">
         <span class="env-card__status-dot" />
         <span class="env-card__status-text">{{ getStatusText() }}</span>
@@ -135,9 +141,7 @@ const progressBarClass = computed(() => {
       </div>
 
       <div class="env-card__progress">
-        <div
-          class="env-card__progress-track"
-        />
+        <div class="env-card__progress-track" />
         <div
           class="env-card__progress-bar"
           :class="progressBarClass"
@@ -149,7 +153,9 @@ const progressBarClass = computed(() => {
         <div class="env-card__threshold-info">
           <div class="env-card__threshold">
             <span class="threshold-label aero-tech-label">THRESHOLD</span>
-            <span class="threshold-value aero-mono">{{ data.threshold }}{{ data.unit }}</span>
+            <span class="threshold-value aero-mono"
+              >{{ data.threshold }}{{ data.unit }}</span
+            >
           </div>
           <div class="env-card__threshold-type">
             <span class="threshold-type-text aero-tech-label">{{

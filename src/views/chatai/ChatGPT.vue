@@ -6,6 +6,7 @@
       <Sidebar
         :conversations="chatStore.conversations"
         :current-id="chatStore.currentConversationId"
+        :is-streaming="chatStore.isStreaming"
         :class="{ 'sidebar-open': sidebarOpen }"
         @select="selectConversation"
         @create="createNewConversation"
@@ -39,11 +40,7 @@
       </div>
     </div>
 
-    <div
-      v-if="sidebarOpen"
-      class="sidebar-overlay"
-      @click="toggleSidebar"
-    />
+    <div v-if="sidebarOpen" class="sidebar-overlay" @click="toggleSidebar" />
   </div>
 </template>
 
@@ -85,7 +82,9 @@ async function fetchConversations() {
     }
   } catch (error) {
     console.error("Failed to fetch conversations:", error);
-    message("Failed to load conversations. Please try again.", { type: "error" });
+    message("Failed to load conversations. Please try again.", {
+      type: "error"
+    });
   }
 }
 
@@ -94,7 +93,10 @@ async function loadConversationDetail(conversationId: string) {
   if (!username) return;
 
   try {
-    const detail = await chatAPI.getConversationDetail(conversationId, username);
+    const detail = await chatAPI.getConversationDetail(
+      conversationId,
+      username
+    );
     chatStore.loadConversationDetail(detail, username);
   } catch (error) {
     console.error("Failed to load conversation detail:", error);
@@ -116,15 +118,16 @@ function toggleSidebar() {
 
 async function selectConversation(id: string) {
   chatStore.switchConversation(id);
-  await loadConversationDetail(id);
+  if (!chatStore.isStreaming) {
+    await loadConversationDetail(id);
+  }
   if (window.innerWidth < 1024) {
     sidebarOpen.value = false;
   }
 }
 
 function createNewConversation() {
-  const conversationId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
-  chatStore.createConversation(conversationId, "New Analysis");
+  chatStore.resetToNewConversation();
   if (window.innerWidth < 1024) {
     sidebarOpen.value = false;
   }
@@ -143,7 +146,9 @@ async function deleteConversation(id: string) {
     message("Conversation deleted successfully", { type: "success" });
   } catch (error) {
     console.error("Failed to delete conversation:", error);
-    message("Failed to delete conversation. Please try again.", { type: "error" });
+    message("Failed to delete conversation. Please try again.", {
+      type: "error"
+    });
   }
 }
 
@@ -160,7 +165,9 @@ async function renameConversation(id: string, newTitle: string) {
     message("Conversation renamed successfully", { type: "success" });
   } catch (error) {
     console.error("Failed to rename conversation:", error);
-    message("Failed to rename conversation. Please try again.", { type: "error" });
+    message("Failed to rename conversation. Please try again.", {
+      type: "error"
+    });
   }
 }
 
@@ -342,7 +349,9 @@ function handleScroll({
 }
 
 .sidebar {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s ease;
 
   @media (max-width: 1023px) {
     box-shadow: none;

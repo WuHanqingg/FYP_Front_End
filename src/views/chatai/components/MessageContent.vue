@@ -96,7 +96,10 @@ function filterToolCalls(content: string): string {
       return false;
     }
     // [Observation] 或 Observation: (工具执行结果)
-    if (trimmedLine.startsWith("[Observation]") || trimmedLine.startsWith("Observation:")) {
+    if (
+      trimmedLine.startsWith("[Observation]") ||
+      trimmedLine.startsWith("Observation:")
+    ) {
       return false;
     }
     // Thought: 段（推理过程，仅展示最终 Answer）

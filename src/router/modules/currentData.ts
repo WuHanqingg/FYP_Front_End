@@ -16,7 +16,7 @@ export default {
       name: "data",
       component: () => import("@/views/data/index.vue"),
       meta: {
-        title: "Current Data",
+        title: "Current Data"
       }
     }
   ]

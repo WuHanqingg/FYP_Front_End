@@ -90,18 +90,18 @@ useEventListener(document, "keydown", ({ code }) => {
 <template>
   <div class="login-container aero-dot-bg">
     <div class="aero-noise-bg" />
-    
+
     <div class="flex-c absolute right-5 top-3">
       <el-switch
         v-model="dataTheme"
         inline-prompt
         :active-icon="dayIcon"
         :inactive-icon="darkIcon"
-        @change="dataThemeChange"
         class="theme-switch"
+        @change="dataThemeChange"
       />
     </div>
-    
+
     <div class="login-content">
       <div class="login-visual">
         <div class="visual-card primary aero-card-cyan aero-float">
@@ -114,13 +114,13 @@ useEventListener(document, "keydown", ({ code }) => {
           <Icon icon="carbon:chart-line-data" class="visual-icon" />
         </div>
       </div>
-      
+
       <div class="login-box aero-card">
         <div class="aero-corner-mark top-left" />
         <div class="aero-corner-mark top-right" />
         <div class="aero-corner-mark bottom-left" />
         <div class="aero-corner-mark bottom-right" />
-        
+
         <div class="login-form">
           <Motion>
             <h2 class="login-title aero-display aero-uppercase">{{ title }}</h2>
@@ -249,7 +249,7 @@ useEventListener(document, "keydown", ({ code }) => {
 
   /* 修复4: Primary 卡片改为 relative，这样它会被父级 Flex 完美居中 */
   &.primary {
-    position: relative; 
+    position: relative;
     width: 180px;
     height: 180px;
     z-index: 3;
@@ -409,5 +409,4 @@ useEventListener(document, "keydown", ({ code }) => {
     background: var(--aero-gradient-cyan);
   }
 }
-
 </style>

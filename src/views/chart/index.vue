@@ -248,7 +248,8 @@ const updateChart = () => {
     series: [
       {
         name: currentChartDataDetail.value.seriesName,
-        type: currentChartType.value === "area" ? "line" : currentChartType.value,
+        type:
+          currentChartType.value === "area" ? "line" : currentChartType.value,
         smooth: true,
         symbol: "circle",
         symbolSize: 4,
@@ -571,7 +572,7 @@ onMounted(() => {
 <template>
   <div class="chart-container aero-dot-bg">
     <div class="aero-noise-bg" />
-    
+
     <div class="chart-content">
       <!-- Header -->
       <div class="header-section aero-card">
@@ -579,9 +580,9 @@ onMounted(() => {
         <div class="aero-corner-mark top-right" />
         <div class="aero-corner-mark bottom-left" />
         <div class="aero-corner-mark bottom-right" />
-        
+
         <h2 class="page-title aero-display aero-uppercase">DATA ANALYTICS</h2>
-        
+
         <div class="controls-row">
           <div class="control-group">
             <label class="control-label aero-tech-label">DATA TYPE</label>
@@ -599,7 +600,7 @@ onMounted(() => {
               />
             </el-select>
           </div>
-          
+
           <div class="control-group">
             <label class="control-label aero-tech-label">CHART TYPE</label>
             <el-select
@@ -617,7 +618,7 @@ onMounted(() => {
             </el-select>
           </div>
         </div>
-        
+
         <div class="filter-row">
           <div class="filter-item">
             <label class="filter-label aero-tech-label">TIME RANGE</label>
@@ -633,7 +634,7 @@ onMounted(() => {
               @change="handleDateChange"
             />
           </div>
-          
+
           <div class="filter-item">
             <label class="filter-label aero-tech-label">DATA INTERVAL</label>
             <el-select
@@ -650,8 +651,11 @@ onMounted(() => {
               />
             </el-select>
           </div>
-          
-          <div v-if="state.showCustomInterval" class="filter-item custom-interval">
+
+          <div
+            v-if="state.showCustomInterval"
+            class="filter-item custom-interval"
+          >
             <label class="filter-label aero-tech-label">CUSTOM (MIN)</label>
             <el-input-number
               v-model="state.customInterval"
@@ -664,7 +668,7 @@ onMounted(() => {
               Apply
             </button>
           </div>
-          
+
           <div class="action-buttons">
             <button class="action-btn secondary" @click="resetDateRange">
               Reset
@@ -673,9 +677,7 @@ onMounted(() => {
               Export Excel
             </button>
             <el-dropdown>
-              <button class="action-btn primary">
-                Download Chart
-              </button>
+              <button class="action-btn primary">Download Chart</button>
               <template #dropdown>
                 <el-dropdown-menu class="aero-dropdown-menu">
                   <el-dropdown-item @click="downloadChart('png')">
@@ -690,34 +692,36 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      
+
       <!-- Chart Section -->
       <div class="chart-section aero-card">
         <div class="aero-corner-mark top-left" />
         <div class="aero-corner-mark top-right" />
         <div class="aero-corner-mark bottom-left" />
         <div class="aero-corner-mark bottom-right" />
-        
+
         <div class="chart-wrapper">
-          <div
-            ref="chartRef"
-            class="chart"
-          />
-          
+          <div ref="chartRef" class="chart" />
+
           <div v-if="state.loading" class="loading-overlay">
             <div class="loading-content">
               <div class="loading-spinner" />
               <p class="loading-text aero-tech-label">Loading data...</p>
-              
+
               <div v-if="state.totalBatches > 1" class="batch-progress">
                 <div class="progress-info">
                   <span class="progress-label aero-tech-label">
                     Batch {{ state.currentBatch }}/{{ state.totalBatches }}
                   </span>
-                  <span class="progress-value aero-mono">{{ state.batchProgress }}%</span>
+                  <span class="progress-value aero-mono"
+                    >{{ state.batchProgress }}%</span
+                  >
                 </div>
                 <div class="progress-bar">
-                  <div class="progress-fill" :style="{ width: state.batchProgress + '%' }" />
+                  <div
+                    class="progress-fill"
+                    :style="{ width: state.batchProgress + '%' }"
+                  />
                 </div>
                 <p class="progress-note aero-tech-label">
                   Time range exceeds 1 month, fetching in batches...
@@ -727,7 +731,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      
+
       <!-- Statistics Section -->
       <div class="statistics-section">
         <div class="stat-card aero-card">
@@ -735,10 +739,20 @@ onMounted(() => {
           <div class="aero-corner-mark top-right" />
           <div class="aero-corner-mark bottom-left" />
           <div class="aero-corner-mark bottom-right" />
-          
+
           <div class="stat-icon-wrapper">
-            <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            <svg
+              class="stat-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
             </svg>
           </div>
           <div class="stat-content">
@@ -746,16 +760,26 @@ onMounted(() => {
             <span class="stat-value aero-mono">{{ statistics.count }}</span>
           </div>
         </div>
-        
+
         <div class="stat-card aero-card">
           <div class="aero-corner-mark top-left" />
           <div class="aero-corner-mark top-right" />
           <div class="aero-corner-mark bottom-left" />
           <div class="aero-corner-mark bottom-right" />
-          
+
           <div class="stat-icon-wrapper" style="color: #00d4ff">
-            <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            <svg
+              class="stat-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              />
             </svg>
           </div>
           <div class="stat-content">
@@ -765,16 +789,26 @@ onMounted(() => {
             </span>
           </div>
         </div>
-        
+
         <div class="stat-card aero-card">
           <div class="aero-corner-mark top-left" />
           <div class="aero-corner-mark top-right" />
           <div class="aero-corner-mark bottom-left" />
           <div class="aero-corner-mark bottom-right" />
-          
+
           <div class="stat-icon-wrapper" style="color: #00ffaa">
-            <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21h18M5 21V7l8-4 8 4V7" />
+            <svg
+              class="stat-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M3 21h18M5 21V7l8-4 8 4V7"
+              />
             </svg>
           </div>
           <div class="stat-content">
@@ -784,16 +818,26 @@ onMounted(() => {
             </span>
           </div>
         </div>
-        
+
         <div class="stat-card aero-card">
           <div class="aero-corner-mark top-left" />
           <div class="aero-corner-mark top-right" />
           <div class="aero-corner-mark bottom-left" />
           <div class="aero-corner-mark bottom-right" />
-          
+
           <div class="stat-icon-wrapper" style="color: #7c3aed">
-            <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h-2a2 2 0 00-2-2z" />
+            <svg
+              class="stat-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h-2a2 2 0 00-2-2z"
+              />
             </svg>
           </div>
           <div class="stat-content">
@@ -804,39 +848,51 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      
+
       <!-- Info Section -->
       <div class="info-section aero-card">
         <div class="aero-corner-mark top-left" />
         <div class="aero-corner-mark top-right" />
         <div class="aero-corner-mark bottom-left" />
         <div class="aero-corner-mark bottom-right" />
-        
+
         <h3 class="info-title aero-display aero-uppercase">USAGE GUIDE</h3>
         <div class="info-list">
           <div class="info-item">
             <span class="info-dot" />
-            <span class="info-text aero-body">X-axis represents time (accurate to minutes)</span>
+            <span class="info-text aero-body"
+              >X-axis represents time (accurate to minutes)</span
+            >
           </div>
           <div class="info-item">
             <span class="info-dot" />
-            <span class="info-text aero-body">Y-axis represents value of data</span>
+            <span class="info-text aero-body"
+              >Y-axis represents value of data</span
+            >
           </div>
           <div class="info-item">
             <span class="info-dot" />
-            <span class="info-text aero-body">Choose data type from the dropdown menu</span>
+            <span class="info-text aero-body"
+              >Choose data type from the dropdown menu</span
+            >
           </div>
           <div class="info-item">
             <span class="info-dot" />
-            <span class="info-text aero-body">Filter data for specific time periods</span>
+            <span class="info-text aero-body"
+              >Filter data for specific time periods</span
+            >
           </div>
           <div class="info-item">
             <span class="info-dot" />
-            <span class="info-text aero-body">Adjust data point density via interval selector</span>
+            <span class="info-text aero-body"
+              >Adjust data point density via interval selector</span
+            >
           </div>
           <div class="info-item">
             <span class="info-dot" />
-            <span class="info-text aero-body">Select "Custom" to enter custom interval</span>
+            <span class="info-text aero-body"
+              >Select "Custom" to enter custom interval</span
+            >
           </div>
         </div>
       </div>

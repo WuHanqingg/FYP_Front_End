@@ -143,7 +143,9 @@ export class ChatAPI {
           if (trimmedLine.startsWith("data: ")) {
             try {
               const jsonStr = trimmedLine.slice(6);
-              const data = JSON.parse(jsonStr) as StreamChunk & { error?: string };
+              const data = JSON.parse(jsonStr) as StreamChunk & {
+                error?: string;
+              };
 
               // 后端错误格式: { error: "错误信息" }
               if (data.error) {
@@ -216,7 +218,9 @@ export class ChatAPI {
     }
   }
 
-  async getUserConversations(username: string): Promise<ConversationListItem[]> {
+  async getUserConversations(
+    username: string
+  ): Promise<ConversationListItem[]> {
     try {
       const response = await fetch(
         `${this.conversationsBaseURL}?username=${encodeURIComponent(username)}`
@@ -255,7 +259,9 @@ export class ChatAPI {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error("Unknown error occurred while fetching conversation detail");
+      throw new Error(
+        "Unknown error occurred while fetching conversation detail"
+      );
     }
   }
 
@@ -312,7 +318,9 @@ export class ChatAPI {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error("Unknown error occurred while updating conversation title");
+      throw new Error(
+        "Unknown error occurred while updating conversation title"
+      );
     }
   }
 

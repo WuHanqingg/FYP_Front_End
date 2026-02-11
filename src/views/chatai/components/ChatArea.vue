@@ -1,22 +1,23 @@
 <template>
-  <div
-    ref="chatContainer"
-    class="chat-area"
-    @scroll="handleScroll"
-  >
+  <div ref="chatContainer" class="chat-area" @scroll="handleScroll">
     <!-- 欢迎页面 -->
     <div v-if="messages.length === 0" class="welcome-view">
       <div class="welcome-content">
         <div class="welcome-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </div>
         <h2 class="welcome-title">AI Assistant</h2>
         <p class="welcome-subtitle">
           Intelligent analysis and insights for your environmental data
         </p>
-        
+
         <div class="suggestions-grid">
           <button
             v-for="suggestion in suggestions"
@@ -25,8 +26,18 @@
             @click="$emit('send', suggestion)"
           >
             <span class="suggestion-text">{{ suggestion }}</span>
-            <svg class="suggestion-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M5 12h14M12 5l7 7-7 7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              class="suggestion-arrow"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                d="M5 12h14M12 5l7 7-7 7"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </button>
         </div>
@@ -44,25 +55,47 @@
         <div class="message-avatar">
           <div v-if="message.role === 'user'" class="avatar user-avatar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <div v-else class="avatar assistant-avatar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
         </div>
-        
+
         <div class="message-content-wrapper">
           <div
             class="message-bubble"
-            :class="message.role === 'user' ? 'user-bubble' : 'assistant-bubble'"
+            :class="
+              message.role === 'user' ? 'user-bubble' : 'assistant-bubble'
+            "
           >
             <div v-if="message.error" class="error-content">
               <div class="error-header">
-                <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <svg
+                  class="error-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
                 </svg>
                 <span class="error-title">Error</span>
               </div>
@@ -86,7 +119,12 @@
               @click="$emit('copy', message.content)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
               <span>Copy</span>
             </button>
@@ -94,7 +132,7 @@
         </div>
       </div>
 
-      <div ref="scrollAnchor" class="scroll-anchor"></div>
+      <div ref="scrollAnchor" class="scroll-anchor" />
 
       <FileList
         v-if="generatedFiles.length > 0"
