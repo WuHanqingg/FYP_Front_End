@@ -52,7 +52,7 @@ const getTypeString = (type: number) => {
   } else if (type == 0) {
     return "below";
   } else {
-    return "none";
+    return "off";
   }
 };
 
@@ -64,20 +64,6 @@ const getTypeNum = (type: string) => {
   } else {
     return 2;
   }
-};
-
-// 阈值类型选项
-const thresholdTypeOptions = [
-  { value: "above", label: "Beyond threshold warning" },
-  { value: "below", label: "Below threshold warning" },
-  { value: "none", label: "No comparison" }
-];
-
-// 阈值类型映射
-const thresholdTypeMap = {
-  above: "Beyond threshold warning",
-  below: "Below threshold warning",
-  none: "No comparison"
 };
 
 // 新阈值输入值
@@ -94,14 +80,25 @@ const initThresholdInputs = () => {
   });
 };
 
-// 更新阈值的方法（暂留空）
+// 设置触发类型
+const setTriggerType = (id: string, type: string) => {
+  newThresholdTypes.value[id] = type;
+};
+
+// 取消修改
+const cancelUpdate = (item: EnvironmentDataType) => {
+  newThresholdValues.value[item.id] = String(item.threshold);
+  newThresholdTypes.value[item.id] = item.thresholdType;
+  ElMessage.info("Changes cancelled");
+};
+
+// 更新阈值的方法
 const updateThreshold = async (id: string) => {
   const newValue = newThresholdValues.value[id];
   const newType = getTypeNum(newThresholdTypes.value[id]);
-  console.log(newValue, newType, id);
 
   if ((newValue === undefined || newValue === "") && newType != 2) {
-    ElMessage.warning("请输入有效的阈值");
+    ElMessage.warning("Please enter a valid threshold value");
     return;
   }
 
@@ -113,29 +110,57 @@ const updateThreshold = async (id: string) => {
   };
   const res = await updateThresholdById(data);
   if (res.data.code == 200) {
-    ElMessage.success(`${item.name} 阈值和类型更新成功`);
+    ElMessage.success(`${item.name} alert settings updated successfully`);
+    // 更新本地数据
+    item.threshold = newValue;
+    item.thresholdType = newThresholdTypes.value[id];
   } else {
-    ElMessage.error(`${item.name} 阈值和类型更新失败`);
+    ElMessage.error(`${item.name} alert settings update failed`);
   }
 };
+
+// 获取当前读数状态
+const getReadingStatus = (item: EnvironmentDataType) => {
+  const value = Number(item.value) || 0;
+  const threshold = Number(item.threshold) || 0;
+  
+  if (item.thresholdType === "off" || threshold === 0) {
+    return "Normal";
+  }
+  
+  if (item.thresholdType === "above") {
+    return value > threshold ? "Alert" : "Normal";
+  } else if (item.thresholdType === "below") {
+    return value < threshold ? "Alert" : "Normal";
+  }
+  
+  return "Normal";
+};
+
 onMounted(() => {
-  console.log("onMounted");
   fetchData();
   initThresholdInputs();
 });
 </script>
 
 <template>
-  <div class="threshold-container">
-    <div class="threshold-header">
-      <h2>ThresholdSetting</h2>
-      <p>
-        Set thresholds for environmental indicators. System will alert when
-        values exceed thresholds.
-      </p>
-    </div>
-
+  <div class="threshold-container aero-dot-bg">
+    <div class="aero-noise-bg" />
+    
     <div class="threshold-content">
+      <div class="threshold-header aero-card">
+        <div class="aero-corner-mark top-left" />
+        <div class="aero-corner-mark top-right" />
+        <div class="aero-corner-mark bottom-left" />
+        <div class="aero-corner-mark bottom-right" />
+        
+        <h2 class="threshold-title aero-display aero-uppercase">THRESHOLD SETTING</h2>
+        <p class="threshold-description aero-body">
+          Set thresholds for environmental indicators. System will alert when
+          values exceed thresholds.
+        </p>
+      </div>
+
       <el-row :gutter="20">
         <el-col
           v-for="item in environmentData"
@@ -146,58 +171,79 @@ onMounted(() => {
           :lg="6"
           class="threshold-item-col"
         >
-          <div class="threshold-card">
-            <div class="threshold-card-header">
-              <IconifyIconOnline :icon="item.icon" class="threshold-icon" />
-              <div class="threshold-info">
-                <h3 class="threshold-type">{{ item.name }}</h3>
-                <p class="threshold-current">
-                  Current threshold:
-                  <span class="current-value"
-                    >{{ item.threshold }}{{ item.unit }}</span
-                  >
-                </p>
-                <p class="threshold-type-info">
-                  Type:
-                  <span class="type-value">{{
-                    thresholdTypeMap[
-                      item.thresholdType as keyof typeof thresholdTypeMap
-                    ]
-                  }}</span>
-                </p>
+          <div class="alert-card aero-card">
+            <div class="aero-corner-mark top-left" />
+            <div class="aero-corner-mark top-right" />
+            <div class="aero-corner-mark bottom-left" />
+            <div class="aero-corner-mark bottom-right" />
+            
+            <!-- Card Title -->
+            <div class="card-title-row">
+              <h3 class="card-title aero-display">{{ item.name }} Alert Settings</h3>
+            </div>
+            
+            <!-- Row 1: Current Reading -->
+            <div class="reading-row">
+              <div class="reading-badge aero-glass-weak">
+                <span class="reading-label">Current Reading:</span>
+                <span class="reading-value aero-mono">{{ item.value || 0 }} {{ item.unit }}</span>
+                <span class="reading-status" :class="getReadingStatus(item).toLowerCase()">
+                  ({{ getReadingStatus(item) }})
+                </span>
               </div>
             </div>
-
-            <div class="threshold-input-group">
-              <el-input
-                v-model="newThresholdValues[item.id]"
-                :placeholder="`输入新的${item.name}阈值`"
-                class="threshold-input"
-                clearable
-              >
-                <template #append>{{ item.unit }}</template>
-              </el-input>
-
-              <el-select
-                v-model="newThresholdTypes[item.id]"
-                class="threshold-type-select"
-                placeholder="请选择阈值类型"
-              >
-                <el-option
-                  v-for="option in thresholdTypeOptions"
-                  :key="option.value"
-                  :label="option.label"
-                  :value="option.value"
+            
+            <!-- Row 2: Trigger Condition -->
+            <div class="trigger-row">
+              <label class="trigger-label aero-tech-label">Trigger Condition</label>
+              <div class="trigger-options">
+                <button
+                  class="trigger-btn"
+                  :class="{ active: newThresholdTypes[item.id] === 'above' }"
+                  @click="setTriggerType(item.id, 'above')"
+                >
+                  Alert if Above (>)
+                </button>
+                <button
+                  class="trigger-btn"
+                  :class="{ active: newThresholdTypes[item.id] === 'below' }"
+                  @click="setTriggerType(item.id, 'below')"
+                >
+                  Alert if Below (<)
+                </button>
+                <button
+                  class="trigger-btn"
+                  :class="{ active: newThresholdTypes[item.id] === 'off' }"
+                  @click="setTriggerType(item.id, 'off')"
+                >
+                  Off
+                </button>
+              </div>
+            </div>
+            
+            <!-- Row 3: Threshold Value -->
+            <div class="value-row">
+              <label class="value-label aero-tech-label">Threshold Value</label>
+              <div class="value-input-wrapper">
+                <input
+                  v-model="newThresholdValues[item.id]"
+                  type="number"
+                  class="value-input aero-mono"
+                  placeholder="Enter value"
+                  :disabled="newThresholdTypes[item.id] === 'off'"
                 />
-              </el-select>
-
-              <el-button
-                type="primary"
-                class="update-btn"
-                @click="updateThreshold(item.id)"
-              >
-                Update
-              </el-button>
+                <span class="value-unit aero-tech-label">{{ item.unit }}</span>
+              </div>
+            </div>
+            
+            <!-- Row 4: Action Buttons -->
+            <div class="action-row">
+              <button class="cancel-btn" @click="cancelUpdate(item)">
+                Cancel
+              </button>
+              <button class="confirm-btn" @click="updateThreshold(item.id)">
+                Save Configuration
+              </button>
             </div>
           </div>
         </el-col>
@@ -207,50 +253,53 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-// 响应式调整
-@media (width <= 768px) {
-  .threshold-container {
-    padding: 15px;
-  }
-
-  .threshold-card {
-    padding: 15px;
-  }
-
-  .threshold-input-group {
-    flex-direction: column;
-
-    .update-btn {
-      width: 100%;
-    }
-  }
-}
-
 .threshold-container {
+  position: relative;
   min-height: calc(100vh - 100px);
   padding: 20px;
-  background-color: #f5f7fa;
-}
+  background: linear-gradient(180deg, var(--aero-bg-base) 0%, #f0f4f8 100%);
+  font-family: var(--aero-font-body);
 
-.threshold-header {
-  margin-bottom: 30px;
-
-  h2 {
-    margin-bottom: 10px;
-    font-size: 24px;
-    font-weight: 600;
-    color: #303133;
-  }
-
-  p {
-    font-size: 14px;
-    color: #606266;
+  .aero-noise-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 0;
   }
 }
 
 .threshold-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+
   .el-row {
     margin-bottom: 20px;
+  }
+}
+
+.threshold-header {
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+
+  .threshold-title {
+    font-size: var(--aero-font-size-2xl);
+    font-weight: var(--aero-font-weight-semibold);
+    color: var(--aero-text-primary);
+    margin-bottom: 0.75rem;
+    letter-spacing: var(--aero-letter-spacing-wider);
+  }
+
+  .threshold-description {
+    font-size: var(--aero-font-size-base);
+    color: var(--aero-text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
   }
 }
 
@@ -258,100 +307,249 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-.threshold-card {
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 5%);
-  transition: all 0.3s ease;
-
-  &:hover {
-    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 10%);
-    transform: translateY(-2px);
-  }
-}
-
-.threshold-card-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.threshold-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  margin-right: 15px;
-  background: #fff;
-  border-radius: 12px;
-
-  i {
-    font-size: 24px;
-    color: #409eff;
-  }
-}
-
-.threshold-info {
-  flex: 1;
-
-  .threshold-type {
-    margin: 0 0 5px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #303133;
-  }
-
-  .threshold-current {
-    margin: 0 0 3px;
-    font-size: 13px;
-    color: #909399;
-
-    .current-value {
-      font-weight: 500;
-      color: #409eff;
-    }
-  }
-
-  .threshold-type-info {
-    margin: 0;
-    font-size: 12px;
-    color: #909399;
-
-    .type-value {
-      font-weight: 500;
-      color: #67c23a;
-    }
-  }
-}
-
-.threshold-input-group {
+// Alert Card - New Design
+.alert-card {
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.75rem;
+}
 
-  .threshold-input {
-    width: 100%;
-  }
+// Card Title
+.card-title-row {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 20, 40, 0.06);
 
-  .threshold-type-select {
-    width: 100%;
-  }
-
-  .update-btn {
-    width: 100%;
-    padding: 12px 16px;
+  .card-title {
+    font-size: var(--aero-font-size-lg);
+    font-weight: var(--aero-font-weight-semibold);
+    color: var(--aero-text-primary);
+    margin: 0;
+    letter-spacing: var(--aero-letter-spacing-tight);
   }
 }
 
-.threshold-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
+// Row 1: Current Reading
+.reading-row {
+  .reading-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--aero-border-radius-md);
+    border: 1px solid var(--aero-border-glass);
+    font-size: var(--aero-font-size-sm);
 
-  .el-button {
-    padding: 12px 30px;
+    .reading-label {
+      color: var(--aero-text-secondary);
+      font-weight: var(--aero-font-weight-medium);
+    }
+
+    .reading-value {
+      color: var(--aero-text-primary);
+      font-weight: var(--aero-font-weight-semibold);
+    }
+
+    .reading-status {
+      font-weight: var(--aero-font-weight-medium);
+      
+      &.normal {
+        color: #00c853;
+      }
+      
+      &.alert {
+        color: #ff3c3c;
+      }
+    }
+  }
+}
+
+// Row 2: Trigger Condition
+.trigger-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .trigger-label {
+    font-size: var(--aero-font-size-xs);
+    color: var(--aero-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: var(--aero-letter-spacing-wider);
+  }
+
+  .trigger-options {
+    display: flex;
+    border-radius: var(--aero-border-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--aero-border-glass);
+    background: var(--aero-bg-glass-weak);
+  }
+
+  .trigger-btn {
+    flex: 1;
+    padding: 8px 6px;
+    border: none;
+    background: transparent;
+    color: var(--aero-text-secondary);
+    font-size: 10px;
+    font-weight: var(--aero-font-weight-medium);
+    cursor: pointer;
+    transition: all var(--aero-transition-fast);
+    text-align: center;
+    white-space: nowrap;
+
+    &:not(:last-child) {
+      border-right: 1px solid var(--aero-border-glass);
+    }
+
+    &:hover {
+      background: rgba(0, 212, 255, 0.05);
+      color: var(--aero-text-primary);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+    }
+  }
+}
+
+// Row 3: Threshold Value
+.value-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .value-label {
+    font-size: var(--aero-font-size-xs);
+    color: var(--aero-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: var(--aero-letter-spacing-wider);
+  }
+
+  .value-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(0, 20, 40, 0.04);
+    border: 1px solid var(--aero-border-glass);
+    border-radius: var(--aero-border-radius-md);
+    transition: all var(--aero-transition-base);
+
+    &:focus-within {
+      border-color: rgba(0, 212, 255, 0.5);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+      background: rgba(0, 20, 40, 0.02);
+    }
+  }
+
+  .value-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 26px;
+    font-weight: var(--aero-font-weight-light);
+    color: var(--aero-text-primary);
+    outline: none;
+    width: 100%;
+
+    &::placeholder {
+      color: var(--aero-text-tertiary);
+      font-size: var(--aero-font-size-lg);
+    }
+
+    &:disabled {
+      color: var(--aero-text-tertiary);
+      cursor: not-allowed;
+    }
+  }
+
+  .value-unit {
+    font-size: var(--aero-font-size-sm);
+    color: var(--aero-text-secondary);
+    font-weight: var(--aero-font-weight-medium);
+    white-space: nowrap;
+  }
+}
+
+// Row 4: Action Buttons
+.action-row {
+  display: flex;
+  gap: 10px;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 20, 40, 0.06);
+
+  .cancel-btn,
+  .confirm-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: var(--aero-border-radius-md);
+    font-size: var(--aero-font-size-xs);
+    font-weight: var(--aero-font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--aero-transition-base);
+    border: none;
+    letter-spacing: var(--aero-letter-spacing-wide);
+  }
+
+  .cancel-btn {
+    background: rgba(0, 20, 40, 0.06);
+    color: var(--aero-text-secondary);
+    border: 1px solid var(--aero-border-glass);
+
+    &:hover {
+      background: rgba(0, 20, 40, 0.1);
+      color: var(--aero-text-primary);
+      border-color: rgba(0, 20, 40, 0.15);
+    }
+  }
+
+  .confirm-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.45);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .threshold-container {
+    padding: 15px;
+  }
+
+  .alert-card {
+    padding: 1rem;
+  }
+
+  .trigger-row {
+    .trigger-btn {
+      padding: 6px 4px;
+      font-size: 9px;
+    }
+  }
+
+  .value-row {
+    .value-input {
+      font-size: 22px;
+    }
+  }
+
+  .action-row {
+    .cancel-btn,
+    .confirm-btn {
+      padding: 8px 10px;
+      font-size: 10px;
+    }
   }
 }
 </style>

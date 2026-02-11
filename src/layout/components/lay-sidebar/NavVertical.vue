@@ -107,6 +107,7 @@ onBeforeUnmount(() => {
         :collapse-transition="false"
         :popper-effect="tooltipEffect"
         :default-active="defaultActive"
+        @select="menuSelect"
       >
         <LaySidebarItem
           v-for="routes in menuData"

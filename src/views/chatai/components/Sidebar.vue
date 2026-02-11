@@ -264,101 +264,116 @@ function executeDelete() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .sidebar {
-  width: 256px;
-  background: #f8f9fa;
-  border-right: 1px solid #e5e7eb;
+  width: 280px;
+  background: var(--aero-bg-glass);
+  border-right: 1px solid var(--aero-border-glass);
   display: flex;
   flex-direction: column;
   height: 100%;
+  backdrop-filter: blur(var(--aero-glass-blur));
+  -webkit-backdrop-filter: blur(var(--aero-glass-blur));
 }
 
 .sidebar-header {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 20px;
+  border-bottom: 1px solid rgba(0, 20, 40, 0.04);
 }
 
 .new-conversation-btn {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  color: #1f2937;
-  font-size: 14px;
-  font-weight: 500;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--aero-bg-glass-weak);
+  border: 1px solid var(--aero-border-glass);
+  border-radius: var(--aero-border-radius-md);
+  color: var(--aero-text-primary);
+  font-family: var(--aero-font-body);
+  font-size: var(--aero-font-size-sm);
+  font-weight: var(--aero-font-weight-semibold);
   cursor: pointer;
-  transition: all 0.2s;
-}
+  transition: all var(--aero-transition-base);
+  letter-spacing: var(--aero-letter-spacing-wide);
+  text-transform: uppercase;
 
-.new-conversation-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  &:hover {
+    background: var(--aero-bg-glass);
+    border-color: rgba(0, 212, 255, 0.3);
+    box-shadow: var(--aero-shadow-glow-cyan);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 .chat-icon {
-  width: 18px;
-  height: 18px;
-  color: #6b7280;
+  width: 20px;
+  height: 20px;
+  color: var(--aero-text-secondary);
 }
 
 .conversation-list {
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: 12px;
 }
 
 .conversation-item {
   position: relative;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   z-index: 1;
-  transition: all 0.3s ease;
+  transition: all var(--aero-transition-base);
   width: 100%;
   box-sizing: border-box;
 }
 
 .conversation-item.renaming {
-  padding: 2px 0;
+  padding: 4px 0;
 }
 
 .conversation-btn {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 12px 14px;
   background: transparent;
   border: none;
-  border-radius: 6px;
-  color: #374151;
-  font-size: 14px;
+  border-radius: var(--aero-border-radius-sm);
+  color: var(--aero-text-secondary);
+  font-family: var(--aero-font-body);
+  font-size: var(--aero-font-size-sm);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all var(--aero-transition-base);
   text-align: left;
-}
 
-.conversation-btn:hover {
-  background: #e5e7eb;
+  &:hover {
+    background: var(--aero-bg-glass-weak);
+    color: var(--aero-text-primary);
+  }
 }
 
 .conversation-item.active .conversation-btn {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--aero-text-primary);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.1);
 }
 
 .conversation-icon {
-  width: 16px;
-  height: 16px;
-  color: #6b7280;
+  width: 18px;
+  height: 18px;
+  color: var(--aero-text-tertiary);
   flex-shrink: 0;
 }
 
 .conversation-item.active .conversation-icon {
-  color: #1e40af;
+  color: var(--aero-text-primary);
 }
 
 .conversation-title {
@@ -366,17 +381,17 @@ function executeDelete() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: var(--aero-font-weight-regular);
 }
 
-/* Rename Container */
 .rename-container {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 8px;
-  background: white;
-  border-radius: 6px;
-  border: 1px solid #3b82f6;
+  padding: 8px 10px;
+  background: var(--aero-bg-glass);
+  border-radius: var(--aero-border-radius-sm);
+  border: 1px solid rgba(0, 212, 255, 0.3);
   animation: renameSlideIn 0.3s ease;
   width: 100%;
   box-sizing: border-box;
@@ -399,8 +414,9 @@ function executeDelete() {
   padding: 6px 8px;
   background: transparent;
   border: none;
-  color: #1f2937;
-  font-size: 14px;
+  color: var(--aero-text-primary);
+  font-family: var(--aero-font-body);
+  font-size: var(--aero-font-size-sm);
   outline: none;
 }
 
@@ -418,30 +434,30 @@ function executeDelete() {
   justify-content: center;
   background: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--aero-border-radius-sm);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--aero-transition-base);
   flex-shrink: 0;
-}
 
-.rename-action-btn:hover {
-  background: #f3f4f6;
+  &:hover {
+    background: var(--aero-bg-glass-weak);
+  }
 }
 
 .rename-action-btn.confirm {
-  color: #10b981;
+  color: #00ffaa;
 }
 
 .rename-action-btn.confirm:hover {
-  background: #d1fae5;
+  background: rgba(0, 255, 170, 0.1);
 }
 
 .rename-action-btn.cancel {
-  color: #ef4444;
+  color: #ff3c3c;
 }
 
 .rename-action-btn.cancel:hover {
-  background: #fee2e2;
+  background: rgba(255, 60, 60, 0.1);
 }
 
 .action-buttons {
@@ -450,7 +466,7 @@ function executeDelete() {
   margin-top: 4px;
   margin-left: 8px;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity var(--aero-transition-base);
 }
 
 .conversation-item:hover .action-buttons {
@@ -465,37 +481,37 @@ function executeDelete() {
   justify-content: center;
   background: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--aero-border-radius-sm);
   cursor: pointer;
-  transition: all 0.2s;
-}
+  transition: all var(--aero-transition-base);
 
-.action-btn:hover {
-  background: #e5e7eb;
+  &:hover {
+    background: var(--aero-bg-glass-weak);
+  }
 }
 
 .action-icon {
   width: 16px;
   height: 16px;
-  color: #6b7280;
+  color: var(--aero-text-tertiary);
 }
 
 .rename-btn:hover .action-icon {
-  color: #3b82f6;
+  color: var(--aero-text-primary);
 }
 
 .delete-btn:hover .action-icon {
-  color: #dc2626;
+  color: #ff3c3c;
 }
 
 .empty-state {
   text-align: center;
   padding: 32px 16px;
-  color: #9ca3af;
-  font-size: 14px;
+  color: var(--aero-text-tertiary);
+  font-family: var(--aero-font-body);
+  font-size: var(--aero-font-size-sm);
 }
 
-/* Delete Animation */
 .conversation-item.is-deleting {
   animation: deleteSlideOut 0.4s ease forwards;
 }
@@ -505,7 +521,7 @@ function executeDelete() {
     opacity: 1;
     transform: translateX(0) scale(1);
     max-height: 60px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
   50% {
     opacity: 0.5;
@@ -520,7 +536,6 @@ function executeDelete() {
   }
 }
 
-/* TransitionGroup Animations */
 .conversation-enter-active,
 .conversation-leave-active {
   transition: all 0.4s ease;
@@ -536,32 +551,33 @@ function executeDelete() {
   transform: translateX(-20px);
 }
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 20, 40, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background: var(--aero-bg-glass-strong);
+  border: 1px solid var(--aero-border-glass-strong);
+  border-radius: var(--aero-border-radius-lg);
+  box-shadow: var(--aero-shadow-ambient-strong);
   width: 100%;
   max-width: 400px;
   margin: 16px;
   overflow: hidden;
   animation: modalSlideIn 0.3s ease;
+  backdrop-filter: blur(var(--aero-glass-blur-strong));
+  -webkit-backdrop-filter: blur(var(--aero-glass-blur-strong));
 }
 
 @keyframes modalSlideIn {
@@ -589,7 +605,7 @@ function executeDelete() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fee2e2;
+  background: rgba(220, 38, 38, 0.1);
   border-radius: 50%;
   color: #dc2626;
 }
@@ -600,9 +616,10 @@ function executeDelete() {
 }
 
 .modal-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
+  font-family: var(--aero-font-display);
+  font-size: var(--aero-font-size-xl);
+  font-weight: var(--aero-font-weight-semibold);
+  color: var(--aero-text-primary);
   margin: 0;
 }
 
@@ -612,19 +629,22 @@ function executeDelete() {
 }
 
 .modal-message {
-  font-size: 14px;
-  color: #4b5563;
+  font-family: var(--aero-font-body);
+  font-size: var(--aero-font-size-sm);
+  color: var(--aero-text-secondary);
   margin: 0 0 8px;
-  line-height: 1.5;
+  line-height: var(--aero-line-height-normal);
 }
 
 .modal-message strong {
-  color: #1f2937;
+  color: var(--aero-text-primary);
+  font-weight: var(--aero-font-weight-semibold);
 }
 
 .modal-hint {
-  font-size: 13px;
-  color: #9ca3af;
+  font-family: var(--aero-font-body);
+  font-size: var(--aero-font-size-xs);
+  color: var(--aero-text-tertiary);
   margin: 0;
 }
 
@@ -636,34 +656,42 @@ function executeDelete() {
 
 .modal-btn {
   flex: 1;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: var(--aero-border-radius-md);
+  font-family: var(--aero-font-body);
+  font-size: var(--aero-font-size-sm);
+  font-weight: var(--aero-font-weight-semibold);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--aero-transition-base);
   border: none;
 }
 
 .modal-btn.cancel {
-  background: #f3f4f6;
-  color: #4b5563;
-}
+  background: var(--aero-bg-glass-weak);
+  color: var(--aero-text-secondary);
+  border: 1px solid var(--aero-border-glass);
 
-.modal-btn.cancel:hover {
-  background: #e5e7eb;
+  &:hover {
+    background: var(--aero-bg-glass);
+    border-color: rgba(0, 212, 255, 0.3);
+  }
 }
 
 .modal-btn.confirm {
-  background: #dc2626;
+  background: var(--aero-gradient-crimson);
   color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
-.modal-btn.confirm:hover {
-  background: #b91c1c;
-}
-
-/* Modal Transitions */
 .modal-enter-active,
 .modal-leave-active {
   transition: all 0.3s ease;

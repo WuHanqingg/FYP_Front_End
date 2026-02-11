@@ -1,10 +1,10 @@
 const Layout = () => import("@/layout/index.vue");
 
 export default {
-  path: "/",
+  path: "/chatai",
   name: "chatai",
   component: Layout,
-  redirect: "/chatai",
+  redirect: "/chatai/index",
   meta: {
     icon: "mdi:robot",
     title: "AI Agent",
@@ -12,7 +12,7 @@ export default {
   },
   children: [
     {
-      path: "/chatai",
+      path: "/chatai/index",
       name: "AI Agent",
       component: () => import("@/views/chatai/ChatGPT.vue"),
       meta: {

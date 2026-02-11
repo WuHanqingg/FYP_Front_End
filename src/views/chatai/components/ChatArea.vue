@@ -1,93 +1,68 @@
 <template>
   <div
     ref="chatContainer"
-    class="flex-1 overflow-y-auto bg-white dark:bg-gray-900"
+    class="chat-area"
     @scroll="handleScroll"
   >
-    <div v-if="messages.length === 0" class="welcome-container">
-      <h2 class="welcome-title">AI Assistant</h2>
-      <p class="welcome-subtitle">
-        Please enter your question, and I'll help you.
-      </p>
-      <div class="suggestions-grid">
-        <button
-          v-for="suggestion in suggestions"
-          :key="suggestion"
-          class="suggestion-button"
-          @click="$emit('send', suggestion)"
-        >
-          <span class="suggestion-text">{{ suggestion }}</span>
-        </button>
+    <!-- 欢迎页面 -->
+    <div v-if="messages.length === 0" class="welcome-view">
+      <div class="welcome-content">
+        <div class="welcome-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="welcome-title">AI Assistant</h2>
+        <p class="welcome-subtitle">
+          Intelligent analysis and insights for your environmental data
+        </p>
+        
+        <div class="suggestions-grid">
+          <button
+            v-for="suggestion in suggestions"
+            :key="suggestion"
+            class="suggestion-card"
+            @click="$emit('send', suggestion)"
+          >
+            <span class="suggestion-text">{{ suggestion }}</span>
+            <svg class="suggestion-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div v-else class="messages-container">
+    <!-- 消息列表 -->
+    <div v-else class="messages-view">
       <div
         v-for="message in messages"
         :key="message.id"
-        class="message-wrapper"
-        :class="message.role === 'user' ? 'user-message' : 'assistant-message'"
+        class="message-row"
+        :class="message.role === 'user' ? 'user-row' : 'assistant-row'"
       >
         <div class="message-avatar">
-          <svg
-            v-if="message.role === 'user'"
-            class="avatar-icon user-avatar"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <path
-              d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <circle
-              cx="12"
-              cy="7"
-              r="4"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <svg
-            v-else
-            class="avatar-icon assistant-avatar"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <path
-              d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          <div v-if="message.role === 'user'" class="avatar user-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div v-else class="avatar assistant-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
         </div>
+        
         <div class="message-content-wrapper">
           <div
             class="message-bubble"
-            :class="
-              message.role === 'user' ? 'user-bubble' : 'assistant-bubble'
-            "
+            :class="message.role === 'user' ? 'user-bubble' : 'assistant-bubble'"
           >
             <div v-if="message.error" class="error-content">
               <div class="error-header">
-                <svg
-                  class="error-icon"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
+                <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 <span class="error-title">Error</span>
               </div>
@@ -106,29 +81,20 @@
             class="message-actions"
           >
             <button
-              class="action-button"
-              title="Copy"
+              class="action-btn"
+              title="Copy to clipboard"
               @click="$emit('copy', message.content)"
             >
-              <svg
-                class="action-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
+              <span>Copy</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div ref="scrollAnchor" class="scroll-anchor" />
+      <div ref="scrollAnchor" class="scroll-anchor"></div>
 
       <FileList
         v-if="generatedFiles.length > 0"
@@ -168,9 +134,9 @@ const scrollAnchor = ref<HTMLElement>();
 
 const suggestions = [
   "How is the weather today?",
-  "Analyze the data yesterday.",
+  "Analyze the data from yesterday",
   "Is it colder or warmer compared to last week?",
-  "What is the hottest day of the last year?"
+  "What was the hottest day of the last year?"
 ];
 
 function handleScroll() {
@@ -201,335 +167,247 @@ watch(
 );
 </script>
 
-<style>
-/* Global font settings */
-:root {
-  --primary-font:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  --font-size-sm: 14px;
-  --font-size-base: 16px;
-  --font-size-lg: 20px;
-  --line-height-base: 1.6;
-  --line-height-tight: 1.3;
-  --letter-spacing-base: 0.02em;
-  --text-color-primary: #333333;
-  --text-color-secondary: #666666;
-  --text-color-tertiary: #999999;
-  --background-color: #ffffff;
-  --border-color: #e5e7eb;
-  --hover-color: #f3f4f6;
-  --accent-color: #3b82f6;
-  --suggestion-bg: #f8f9fa;
-  --suggestion-hover-bg: #e9ecef;
-  --assistant-bubble-bg: #f0f2f5;
+<style scoped lang="scss">
+.chat-area {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--aero-bg-base);
 }
 
-/* Dark mode adaptation */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-color-primary: #ffffff;
-    --text-color-secondary: #d1d5db;
-    --text-color-tertiary: #9ca3af;
-    --background-color: #111827;
-    --border-color: #374151;
-    --hover-color: #1f2937;
-    --suggestion-bg: #1f2937;
-    --suggestion-hover-bg: #374151;
-    --assistant-bubble-bg: #1e293b;
-  }
-
-  .user-avatar {
-    color: #60a5fa;
-    background-color: #1e3a5f;
-  }
-
-  .assistant-avatar {
-    color: #34d399;
-    background-color: #064e3b;
-  }
-}
-</style>
-
-<style scoped>
-/* Welcome page styles */
-.welcome-container {
-  height: 100%;
+.welcome-view {
+  min-height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 48px 24px;
+}
+
+.welcome-content {
+  max-width: 600px;
   text-align: center;
-  padding: 2rem;
-  background-color: var(--background-color);
+}
+
+.welcome-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--aero-bg-glass-weak);
+  border: 1px solid var(--aero-border-glass);
+  border-radius: var(--aero-border-radius-xl);
+  color: var(--aero-text-primary);
+  box-shadow: var(--aero-shadow-ambient);
+}
+
+.welcome-icon svg {
+  width: 40px;
+  height: 40px;
 }
 
 .welcome-title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  color: var(--text-color-primary);
-  margin-bottom: 1rem;
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-base);
+  font-family: var(--aero-font-display);
+  font-size: var(--aero-font-size-3xl);
+  font-weight: var(--aero-font-weight-semibold);
+  color: var(--aero-text-primary);
+  margin: 0 0 16px 0;
+  letter-spacing: var(--aero-letter-spacing-tight);
 }
 
 .welcome-subtitle {
-  font-size: var(--font-size-base);
-  color: var(--text-color-secondary);
-  max-width: 400px;
-  margin-bottom: 2.5rem;
-  line-height: var(--line-height-base);
-  letter-spacing: var(--letter-spacing-base);
-  padding: 0 1rem;
+  font-size: var(--aero-font-size-base);
+  color: var(--aero-text-secondary);
+  margin: 0 0 48px 0;
+  line-height: var(--aero-line-height-relaxed);
 }
 
-/* Suggestion list styles */
 .suggestions-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  max-width: 700px;
-  width: 100%;
-  padding: 0 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
-@media (min-width: 768px) {
-  .suggestions-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+.suggestion-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px;
+  background: var(--aero-bg-glass);
+  border: 1px solid var(--aero-border-glass);
+  border-radius: var(--aero-border-radius-lg);
+  cursor: pointer;
+  transition: all var(--aero-transition-base);
+  text-align: left;
+  box-shadow: var(--aero-shadow-ambient);
+
+  &:hover {
+    border-color: rgba(0, 212, 255, 0.3);
+    box-shadow: var(--aero-shadow-ambient-strong), var(--aero-shadow-glow-cyan);
+    transform: translateY(-2px);
   }
 }
 
-.suggestion-button {
-  background-color: var(--suggestion-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1.25rem 1.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.suggestion-button:hover {
-  background-color: var(--suggestion-hover-bg);
-  border-color: var(--accent-color);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
 .suggestion-text {
-  font-size: var(--font-size-base);
-  color: var(--text-color-primary);
-  line-height: var(--line-height-base);
-  letter-spacing: var(--letter-spacing-base);
-  font-weight: 400;
-  word-break: break-word;
+  font-size: var(--aero-font-size-sm);
+  color: var(--aero-text-primary);
+  line-height: var(--aero-line-height-normal);
+  font-weight: var(--aero-font-weight-regular);
 }
 
-/* Message container styles */
-.messages-container {
-  padding: 1.5rem;
-  background-color: var(--background-color);
+.suggestion-arrow {
+  width: 20px;
+  height: 20px;
+  color: var(--aero-text-tertiary);
+  flex-shrink: 0;
+  transition: color var(--aero-transition-base);
 }
 
-/* Message wrapper */
-.message-wrapper {
-  margin-bottom: 1.5rem;
+.suggestion-card:hover .suggestion-arrow {
+  color: var(--aero-text-primary);
+}
+
+.messages-view {
+  padding: 32px 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.message-row {
   display: flex;
-  width: 100%;
-  gap: 0.75rem;
+  gap: 16px;
+  margin-bottom: 32px;
 }
 
-.user-message {
-  justify-content: flex-end;
+.user-row {
+  flex-direction: row-reverse;
 }
 
-.assistant-message {
-  justify-content: flex-start;
+.assistant-row {
+  flex-direction: row;
 }
 
 .message-avatar {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--aero-border-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--aero-bg-glass-weak);
+  border: 1px solid var(--aero-border-glass);
 }
 
-.user-message .message-avatar {
-  order: 2;
-}
-
-.assistant-message .message-avatar {
-  order: 1;
-}
-
-.avatar-icon {
+.avatar svg {
   width: 20px;
   height: 20px;
 }
 
 .user-avatar {
-  color: #3b82f6;
-  background-color: #eff6ff;
+  color: var(--aero-text-secondary);
 }
 
 .assistant-avatar {
-  color: #10b981;
-  background-color: #ecfdf5;
+  color: var(--aero-text-primary);
 }
 
 .message-content-wrapper {
-  max-width: 85%;
-  display: flex;
-  flex-direction: column;
+  flex: 1;
+  max-width: calc(100% - 56px);
 }
 
-.user-message .message-content-wrapper {
-  align-items: flex-end;
-  order: 1;
-}
-
-.assistant-message .message-content-wrapper {
-  align-items: flex-start;
-  order: 2;
-}
-
-/* Message bubble */
 .message-bubble {
-  padding: 1rem 1.25rem;
-  border-radius: 8px;
-  line-height: var(--line-height-base);
-  letter-spacing: var(--letter-spacing-base);
-  word-wrap: break-word;
-  font-size: var(--font-size-base);
+  padding: 16px 20px;
+  border-radius: var(--aero-border-radius-lg);
+  position: relative;
+  transition: all var(--aero-transition-base);
 }
 
 .user-bubble {
-  background-color: var(--accent-color);
-  color: white;
-  border-bottom-right-radius: 0;
+  background: var(--aero-bg-glass);
+  border: 1px solid var(--aero-border-glass);
+  margin-left: auto;
+  max-width: 80%;
 }
 
 .assistant-bubble {
-  background-color: var(--assistant-bubble-bg);
-  color: var(--text-color-primary);
-  border-bottom-left-radius: 0;
+  background: var(--aero-bg-glass-weak);
+  border: 1px solid var(--aero-border-glass);
+  max-width: 100%;
 }
 
-/* Error message styles */
 .error-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  padding: 12px;
+  background: rgba(220, 38, 38, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--aero-border-radius-md);
 }
 
 .error-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .error-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  color: #dc2626;
 }
 
 .error-title {
-  font-size: var(--font-size-sm);
+  font-size: var(--aero-font-size-sm);
+  font-weight: var(--aero-font-weight-semibold);
+  color: #dc2626;
 }
 
 .error-text {
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-base);
+  font-size: var(--aero-font-size-sm);
+  color: var(--aero-text-secondary);
+  margin: 0;
+  line-height: var(--aero-line-height-normal);
 }
 
-/* Message action buttons */
 .message-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: flex-start;
 }
 
-.action-button {
-  padding: 0.5rem;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--aero-bg-glass-weak);
+  border: 1px solid var(--aero-border-glass);
+  border-radius: var(--aero-border-radius-sm);
+  color: var(--aero-text-secondary);
+  font-size: var(--aero-font-size-xs);
+  font-weight: var(--aero-font-weight-medium);
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-color-tertiary);
+  transition: all var(--aero-transition-base);
+
+  &:hover {
+    background: var(--aero-bg-glass);
+    border-color: rgba(0, 212, 255, 0.3);
+    color: var(--aero-text-primary);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
-.action-button:hover {
-  background-color: var(--hover-color);
-  color: var(--text-color-secondary);
-}
-
-.action-icon {
-  width: 16px;
-  height: 16px;
-}
-
-/* Scroll anchor */
 .scroll-anchor {
-  height: 2rem;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .suggestions-grid {
-    padding: 0 0.5rem;
-  }
-
-  .suggestion-button {
-    padding: 1rem 1.25rem;
-  }
-
-  .suggestion-text {
-    font-size: var(--font-size-sm);
-  }
-
-  .messages-container {
-    padding: 1rem;
-  }
-
-  .message-content-wrapper {
-    max-width: 90%;
-  }
-
-  .message-bubble {
-    padding: 0.875rem 1rem;
-    font-size: var(--font-size-sm);
-  }
-
-  .message-avatar {
-    width: 32px;
-    height: 32px;
-  }
-
-  .avatar-icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .welcome-container {
-    padding: 1.5rem 1rem;
-  }
-
-  .welcome-title {
-    font-size: var(--font-size-base);
-  }
-
-  .welcome-subtitle {
-    font-size: var(--font-size-sm);
-    margin-bottom: 2rem;
-  }
+  height: 1px;
 }
 </style>

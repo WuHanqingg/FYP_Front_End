@@ -5,7 +5,7 @@ import EnvCard from "./components/EnvCard.vue";
 import { getWeatherData } from "../../api/CloudPlatformApi/getCurrentData";
 
 defineOptions({
-  name: "CardList"
+  name: "data"
 });
 
 const svg = `
@@ -35,7 +35,9 @@ const getCardListData = async () => {
   const data = await getWeatherData();
   EnvData.value = CardData.environmentData;
   EnvData.value.forEach(item => {
-    item.value = data[item.id][0].value;
+    if (data[item.id] && data[item.id][0]) {
+      item.value = data[item.id][0].value;
+    }
   });
   pagination.value = {
     ...pagination.value,
@@ -65,16 +67,6 @@ const onCurrentChange = (current: number) => {
       :element-loading-svg="svg"
       element-loading-svg-view-box="-10, -10, 50, 50"
     >
-      <el-empty
-        v-show="
-          EnvData.slice(
-            pagination.pageSize * (pagination.current - 1),
-            pagination.pageSize * pagination.current
-          ).filter(v => v.id.toLowerCase().includes(searchValue.toLowerCase()))
-            .length === 0
-        "
-        :description="`${searchValue} No Data Found, Please Refresh`"
-      />
       <template v-if="pagination.total > 0">
         <el-row :gutter="16">
           <el-col
@@ -92,19 +84,6 @@ const onCurrentChange = (current: number) => {
             <EnvCard :key="data.id" :data="data" />
           </el-col>
         </el-row>
-        <!-- <el-button type="primary" @click="getWeatherData">添加环境</el-button>
-        <el-button type="primary" @click="getYesterdayData">历史数据</el-button> -->
-        <!-- <el-pagination
-          v-model:currentPage="pagination.current"
-          class="float-right"
-          :page-size="pagination.pageSize"
-          :total="pagination.total"
-          :page-sizes="[12, 24, 36]"
-          :background="true"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="onPageSizeChange"
-          @current-change="onCurrentChange"
-        /> -->
       </template>
     </div>
   </div>

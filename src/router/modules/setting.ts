@@ -1,7 +1,7 @@
 const Layout = () => import("@/layout/index.vue");
 
 export default {
-  path: "/",
+  path: "/setting",
   name: "Setting",
   component: Layout,
   redirect: "/setting",

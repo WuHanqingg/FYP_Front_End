@@ -1,10 +1,10 @@
 const Layout = () => import("@/layout/index.vue");
 
 export default {
-  path: "/",
+  path: "/chart",
   name: "Charts",
   component: Layout,
-  redirect: "/chart",
+  redirect: "/chart/index",
   meta: {
     icon: "gridicons:line-graph",
     title: "Charts",
@@ -12,7 +12,7 @@ export default {
   },
   children: [
     {
-      path: "/chart",
+      path: "/chart/index",
       name: "Chart",
       component: () => import("@/views/chart/index.vue"),
       meta: {
