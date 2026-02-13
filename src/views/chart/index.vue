@@ -4,7 +4,6 @@ import * as echarts from "echarts";
 import { getHistoryData } from "@/api/CloudPlatformApi/getCurrentData";
 import chartData from "@/views/data/chartData";
 import * as xlsx from "xlsx";
-import { ElMessage } from "element-plus";
 
 // 图表实例
 const chartRef = ref<HTMLDivElement | null>(null);
@@ -40,7 +39,9 @@ const state = reactive({
   // 总批次数
   totalBatches: 0,
   // 当前批次
-  currentBatch: 0
+  currentBatch: 0,
+  // 数据采样提示
+  dataWarning: ""
 });
 
 // 图表类型选项
@@ -365,7 +366,7 @@ const fetchChartData = async () => {
       const batchSize = ONE_MONTH_MS;
       const numBatches = Math.ceil(timeRange / batchSize);
       state.totalBatches = numBatches;
-      state.currentBatch = 1;
+      state.currentBatch = 0;
 
       const batchPromises = [];
       for (let i = 0; i < numBatches; i++) {
@@ -382,7 +383,7 @@ const fetchChartData = async () => {
             "NONE"
           ).then(result => {
             state.currentBatch += 1;
-            state.batchProgress = Math.round(((i + 1) / numBatches) * 100);
+            state.batchProgress = Math.round(((state.currentBatch) / numBatches) * 100);
             return result;
           })
         );
@@ -451,7 +452,6 @@ const processChartData = (res: any) => {
         (a: { time: string }, b: { time: string }) =>
           new Date(a.time).getTime() - new Date(b.time).getTime()
       );
-
     const maxDataPoints = 3000;
     let finalData = formattedData;
     if (formattedData.length > maxDataPoints) {
@@ -461,9 +461,9 @@ const processChartData = (res: any) => {
         finalData.push(formattedData[i]);
       }
       finalData.push(formattedData[formattedData.length - 1]);
-      ElMessage.warning(
-        `Total ${formattedData.length} data points, displayed ${finalData.length} points to ensure performance`
-      );
+      state.dataWarning = `Total ${formattedData.length} data points, displayed ${finalData.length} points to ensure performance`;
+    } else {
+      state.dataWarning = "";
     }
 
     state.currentData = finalData;
@@ -701,6 +701,9 @@ onMounted(() => {
         <div class="aero-corner-mark bottom-right" />
 
         <div class="chart-wrapper">
+          <div v-if="state.dataWarning" class="data-warning">
+            {{ state.dataWarning }}
+          </div>
           <div ref="chartRef" class="chart" />
 
           <div v-if="state.loading" class="loading-overlay">
@@ -1059,6 +1062,23 @@ onMounted(() => {
     width: 100%;
     height: calc(100vh - 350px);
     min-height: 400px;
+  }
+
+  .data-warning {
+    background: linear-gradient(
+      135deg,
+      rgba(251, 191, 36, 0.15),
+      rgba(245, 158, 11, 0.1)
+    );
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    color: #d97706;
+    font-size: 0.875rem;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   .chart {

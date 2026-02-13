@@ -4,7 +4,7 @@ import axios from "axios";
 // 创建 axios 实例
 const instance = axios.create({
   //baseURL: 'http://182.40.193.119:8081', // 设置基础 URL
-  timeout: 10000 // 设置超时时间
+  timeout: 30000 // 设置超时时间
 });
 
 // 设置请求头信息
