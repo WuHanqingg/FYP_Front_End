@@ -179,109 +179,13 @@ const smoothScroll = (offset: number): void => {
 };
 
 function dynamicRouteTag(value: string): void {
-  // #region agent log
-  fetch("http://127.0.0.1:7244/ingest/aab5b197-f399-4d2f-a8f0-76247ae54223", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      location: "lay-tag/index.vue:181",
-      message: "dynamicRouteTag called",
-      data: {
-        value,
-        multiTagsCount: multiTags.value.length,
-        multiTagsPaths: multiTags.value.map(t => t.path)
-      },
-      timestamp: Date.now(),
-      runId: "run1",
-      hypothesisId: "A"
-    })
-  }).catch(() => {});
-  // #endregion
   const hasValue = multiTags.value.some(item => {
     return item.path === value;
   });
-  // #region agent log
-  fetch("http://127.0.0.1:7244/ingest/aab5b197-f399-4d2f-a8f0-76247ae54223", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      location: "lay-tag/index.vue:186",
-      message: "hasValue check result",
-      data: {
-        hasValue,
-        value,
-        existingPaths: multiTags.value.map(t => t.path)
-      },
-      timestamp: Date.now(),
-      runId: "run1",
-      hypothesisId: "D"
-    })
-  }).catch(() => {});
-  // #endregion
-
   function concatPath(arr: object[], value: string) {
-    // #region agent log
-    fetch("http://127.0.0.1:7244/ingest/aab5b197-f399-4d2f-a8f0-76247ae54223", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "lay-tag/index.vue:188",
-        message: "concatPath called",
-        data: {
-          hasValue,
-          arrLength: arr.length,
-          value,
-          arrPaths: arr.map((a: any) => a.path)
-        },
-        timestamp: Date.now(),
-        runId: "run1",
-        hypothesisId: "B"
-      })
-    }).catch(() => {});
-    // #endregion
     if (!hasValue) {
       arr.forEach((arrItem: any) => {
-        // #region agent log
-        fetch(
-          "http://127.0.0.1:7244/ingest/aab5b197-f399-4d2f-a8f0-76247ae54223",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              location: "lay-tag/index.vue:191",
-              message: "checking route item",
-              data: {
-                itemPath: arrItem.path,
-                targetValue: value,
-                pathMatch: arrItem.path === value,
-                hasChildren: !!arrItem.children,
-                childrenCount: arrItem.children?.length || 0
-              },
-              timestamp: Date.now(),
-              runId: "run1",
-              hypothesisId: "B"
-            })
-          }
-        ).catch(() => {});
-        // #endregion
         if (arrItem.path === value) {
-          // #region agent log
-          fetch(
-            "http://127.0.0.1:7244/ingest/aab5b197-f399-4d2f-a8f0-76247ae54223",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                location: "lay-tag/index.vue:193",
-                message: "route found, pushing tag",
-                data: { path: value, name: arrItem.name, meta: arrItem.meta },
-                timestamp: Date.now(),
-                runId: "run1",
-                hypothesisId: "B"
-              })
-            }
-          ).catch(() => {});
-          // #endregion
           useMultiTagsStoreHook().handleTags("push", {
             path: value,
             meta: arrItem.meta,
@@ -296,20 +200,6 @@ function dynamicRouteTag(value: string): void {
     }
   }
   concatPath(router.options.routes as any, value);
-  // #region agent log
-  fetch("http://127.0.0.1:7244/ingest/aab5b197-f399-4d2f-a8f0-76247ae54223", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      location: "lay-tag/index.vue:204",
-      message: "dynamicRouteTag finished",
-      data: { value, finalMultiTagsCount: multiTags.value.length },
-      timestamp: Date.now(),
-      runId: "run1",
-      hypothesisId: "A"
-    })
-  }).catch(() => {});
-  // #endregion
 }
 
 /** 刷新路由 */
@@ -655,20 +545,6 @@ onMounted(() => {
 
   //  接收侧边栏切换传递过来的参数
   emitter.on("changLayoutRoute", indexPath => {
-    // #region agent log
-    fetch("http://127.0.0.1:7244/ingest/aab5b197-f399-4d2f-a8f0-76247ae54223", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "lay-tag/index.vue:548",
-        message: "changLayoutRoute event received",
-        data: { indexPath, currentRoute: route.fullPath },
-        timestamp: Date.now(),
-        runId: "run1",
-        hypothesisId: "C"
-      })
-    }).catch(() => {});
-    // #endregion
     dynamicRouteTag(indexPath);
     setTimeout(() => {
       showMenuModel(indexPath);

@@ -47,6 +47,17 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/chatai/, ''),
         },
+        '/ambient-api': {
+          target: 'https://api.ambientweather.net/v1',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/ambient-api/, ''),
+          configure: (proxy) => {
+            proxy.on('proxyReq', (proxyReq) => {
+              proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+            });
+          },
+        },
       },
       // 预热文件以提前转换和缓存结果，降低启动期间的初始页面加载时长并防止转换瀑布
       warmup: {

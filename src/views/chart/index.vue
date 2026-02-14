@@ -1,18 +1,38 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, reactive, onMounted, onUnmounted, nextTick, computed, watch } from "vue";
 import * as echarts from "echarts";
-import { getHistoryData } from "@/api/CloudPlatformApi/getCurrentData";
 import chartData from "@/views/data/chartData";
 import * as xlsx from "xlsx";
+import { DataSourceSwitcher } from "@/components/DataSourceSwitcher";
+import { useDataSourceStoreHook, type DataSourceType } from "@/store/modules/dataSource";
+import { fetchHistoryData, getSupportedDataTypes } from "@/api/dataService";
+import { message } from "@/utils/message";
 
-// 图表实例
+const store = useDataSourceStoreHook();
+const currentSource = computed(() => store.getCurrentSource);
+
 const chartRef = ref<HTMLDivElement | null>(null);
 let windDirectionChart: echarts.ECharts | null = null;
 
-// 数据间隔选项（毫秒）
 const intervalOptions = chartData.intervalOptions;
 
-const chartDataType = chartData.chartDataType;
+const AMBIENT_SUPPORTED_TYPES = [
+  "ambientTemperature",
+  "ambientHumidity",
+  "pressure",
+  "windSpeed",
+  "windDirection",
+  "rainfall"
+];
+
+const filteredChartDataType = computed(() => {
+  if (currentSource.value === "ambientWeather") {
+    return chartData.chartDataType.filter(item =>
+      AMBIENT_SUPPORTED_TYPES.includes(item.value.replace("Data", ""))
+    );
+  }
+  return chartData.chartDataType;
+});
 
 const currentChartDataType = ref("windDirection");
 
@@ -329,7 +349,7 @@ const updateDataType = () => {
 const fetchChartData = async () => {
   state.loading = true;
   state.batchProgress = 0;
-  state.totalBatches = 0;
+  state.totalBatches = 1;
   state.currentBatch = 0;
 
   try {
@@ -344,93 +364,46 @@ const fetchChartData = async () => {
       startTs = endTs - 24 * 60 * 60 * 1000;
     }
 
-    const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;
-    const timeRange = endTs - startTs;
+    const result = await fetchHistoryData(
+      currentSource.value,
+      currentChartDataDetail.value.apiRequestName,
+      startTs,
+      endTs,
+      0,
+      43200,
+      "NONE",
+      (progress) => {
+        state.currentBatch = progress.current;
+        state.totalBatches = progress.total;
+        state.batchProgress = progress.percentage;
+      }
+    );
 
-    if (timeRange <= ONE_MONTH_MS) {
-      state.totalBatches = 1;
-      state.currentBatch = 1;
+    state.batchProgress = 100;
+    state.currentData = result.data;
+    state.originalData = result.data;
 
-      const res = await getHistoryData(
-        currentChartDataDetail.value.apiRequestName,
-        startTs,
-        endTs,
-        0,
-        43200,
-        "NONE"
-      );
-
-      state.batchProgress = 100;
-      processChartData(res);
+    if (result.data.length > 3000) {
+      const step = Math.ceil(result.data.length / 3000);
+      const sampledData = [result.data[0]];
+      for (let i = step; i < result.data.length - 1; i += step) {
+        sampledData.push(result.data[i]);
+      }
+      sampledData.push(result.data[result.data.length - 1]);
+      state.currentData = sampledData;
+      state.dataWarning = `Total ${result.data.length} data points, displayed ${sampledData.length} points to ensure performance`;
     } else {
-      const batchSize = ONE_MONTH_MS;
-      const numBatches = Math.ceil(timeRange / batchSize);
-      state.totalBatches = numBatches;
-      state.currentBatch = 0;
-
-      const batchPromises = [];
-      for (let i = 0; i < numBatches; i++) {
-        const batchStart = startTs + i * batchSize;
-        const batchEnd = Math.min(batchStart + batchSize - 1, endTs);
-
-        batchPromises.push(
-          getHistoryData(
-            currentChartDataDetail.value.apiRequestName,
-            batchStart,
-            batchEnd,
-            0,
-            43200,
-            "NONE"
-          ).then(result => {
-            state.currentBatch += 1;
-            state.batchProgress = Math.round(((state.currentBatch) / numBatches) * 100);
-            return result;
-          })
-        );
-      }
-
-      const batchResults = await Promise.allSettled(batchPromises);
-
-      const allData: any[] = [];
-      let successCount = 0;
-      let failCount = 0;
-
-      batchResults.forEach((result, index) => {
-        if (result.status === "fulfilled") {
-          successCount++;
-          const batchData = result.value;
-          if (
-            batchData &&
-            batchData[currentChartDataDetail.value.apiRequestName]
-          ) {
-            allData.push(
-              ...batchData[currentChartDataDetail.value.apiRequestName]
-            );
-          }
-        } else {
-          failCount++;
-          console.error(`Batch ${index + 1} data fetch failed:`, result.reason);
-        }
-      });
-
-      if (successCount > 0) {
-        const res = {
-          [currentChartDataDetail.value.apiRequestName]: allData
-        };
-        processChartData(res);
-
-        if (failCount > 0) {
-          console.warn(
-            `Data fetch completed, ${successCount} batches succeeded, ${failCount} batches failed`
-          );
-        }
-      } else {
-        throw new Error("All batches failed to fetch data");
-      }
+      state.dataWarning = "";
     }
+
+    nextTick(() => {
+      updateChart();
+    });
   } catch (error) {
-    console.error("Failed to fetch data:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch data";
+    message(errorMessage, { type: "error" });
     state.currentData = [];
+    state.originalData = [];
   } finally {
     state.loading = false;
     setTimeout(() => {
@@ -567,6 +540,40 @@ onMounted(() => {
     }
   });
 });
+
+const handleSourceChange = (source: DataSourceType) => {
+  store.preserveState({
+    chartDataType: currentChartDataType.value,
+    chartType: currentChartType.value,
+    interval: state.interval,
+    dateRange: state.dateRange as [string, string] | null
+  });
+  fetchChartData();
+};
+
+const handleSourceError = (error: Error) => {
+  message(error.message, { type: "error" });
+};
+
+watch(currentSource, () => {
+  const preserved = store.restoreState();
+  if (preserved.chartDataType) {
+    const isSupported = AMBIENT_SUPPORTED_TYPES.includes(
+      preserved.chartDataType.replace("Data", "")
+    );
+    if (currentSource.value === "ambientWeather" && !isSupported) {
+      currentChartDataType.value = "windDirection";
+    } else {
+      currentChartDataType.value = preserved.chartDataType;
+    }
+  }
+  if (preserved.chartType) {
+    currentChartType.value = preserved.chartType;
+  }
+  if (preserved.interval !== undefined) {
+    state.interval = preserved.interval;
+  }
+});
 </script>
 
 <template>
@@ -581,7 +588,19 @@ onMounted(() => {
         <div class="aero-corner-mark bottom-left" />
         <div class="aero-corner-mark bottom-right" />
 
-        <h2 class="page-title aero-display aero-uppercase">DATA ANALYTICS</h2>
+        <div class="header-top-row">
+          <h2 class="page-title aero-display aero-uppercase">DATA ANALYTICS</h2>
+          <div class="header-actions">
+            <button class="refresh-btn" @click="fetchChartData" :disabled="state.loading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" :class="{ 'spinning': state.loading }">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>Refresh</span>
+            </button>
+            <DataSourceSwitcher @change="handleSourceChange" @error="handleSourceError" />
+          </div>
+        </div>
 
         <div class="controls-row">
           <div class="control-group">
@@ -593,7 +612,7 @@ onMounted(() => {
               @change="updateDataType()"
             >
               <el-option
-                v-for="item in chartDataType"
+                v-for="item in filteredChartDataType"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -727,7 +746,7 @@ onMounted(() => {
                   />
                 </div>
                 <p class="progress-note aero-tech-label">
-                  Time range exceeds 1 month, fetching in batches...
+                  Time range exceeds {{ currentSource === 'ambientWeather' ? '1 day' : '1 month' }}, fetching in batches...
                 </p>
               </div>
             </div>
@@ -937,12 +956,70 @@ onMounted(() => {
   padding: 1.5rem;
   margin-bottom: 20px;
 
+  .header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 1.5rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--aero-bg-glass-weak);
+    border: 1px solid var(--aero-border-glass);
+    border-radius: var(--aero-border-radius-md);
+    color: var(--aero-text-secondary);
+    font-size: var(--aero-font-size-sm);
+    font-weight: var(--aero-font-weight-medium);
+    cursor: pointer;
+    transition: all var(--aero-transition-base);
+
+    &:hover:not(:disabled) {
+      background: var(--aero-bg-glass);
+      border-color: rgba(0, 212, 255, 0.3);
+      color: var(--aero-text-primary);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+
+      &.spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  }
+
   .page-title {
     font-size: var(--aero-font-size-2xl);
     font-weight: var(--aero-font-weight-semibold);
     color: var(--aero-text-primary);
-    margin: 0 0 1.5rem 0;
-    text-align: center;
+    margin: 0;
     letter-spacing: var(--aero-letter-spacing-wider);
   }
 
